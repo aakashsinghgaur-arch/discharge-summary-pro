@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Set password · Discharge Summary Pro</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b4a85">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body class="dsp-page">
+<main class="auth-wrap">
+  <section class="dsp-card auth-card" aria-labelledby="ttl">
+    <header class="auth-head">
+      <div class="brand-mark" aria-hidden="true">✚</div>
+      <h1 id="ttl">Set your password</h1>
+      <p>Discharge Summary Pro · GMCH</p>
+    </header>
+    <div id="note" class="notice" role="status">Checking your link…</div>
+    <form id="setpw" novalidate hidden>
+      <label for="pw1">New password</label>
+      <div class="pw-wrap"><input id="pw1" type="password" autocomplete="new-password" required><button type="button" class="pw-toggle" aria-controls="pw1" aria-pressed="false">Show</button></div>
+      <label for="pw2">Confirm new password</label>
+      <input id="pw2" type="password" autocomplete="new-password" required>
+      <p class="muted small">At least 10 characters, with letters and numbers.</p>
+      <p class="form-err" id="err" role="alert"></p>
+      <button class="dsp-btn primary block" id="go" type="submit">Save password</button>
+    </form>
+    <footer class="auth-foot"><a href="login.html">Back to sign in</a></footer>
+  </section>
+</main>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script type="module" src="js/reset.js"></script>
+</body>
+</html>

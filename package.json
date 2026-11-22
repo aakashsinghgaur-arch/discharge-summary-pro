@@ -1,0 +1,29 @@
+{
+  "name": "discharge-summary-pro",
+  "version": "2.0.0",
+  "description": "Multi-doctor discharge summary application for Surgical Gastroenterology, LT & HPB, GMCH (Vercel + Supabase).",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs dist 5173",
+    "vendor": "node scripts/vendor.mjs",
+    "test": "npm run test:unit && npm run test:db && npm run test:e2e",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:db": "bash tests/db/reset-db.sh && node --test tests/db/*.test.mjs",
+    "test:e2e": "playwright test --grep-invert screens",
+    "screens": "playwright test screens"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "jszip": "^3.10.2",
+    "pg": "^8.23.1",
+    "@supabase/supabase-js": "2.119.2",
+    "typo-js": "1.2.4",
+    "dictionary-en": "3.2.0"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
+}

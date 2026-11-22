@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in · Discharge Summary Pro</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b4a85">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body class="dsp-page">
+<noscript><p style="margin:0;padding:16px;font:15px sans-serif;background:#fff3cd;color:#664d03">This tool needs JavaScript. Please enable it in your browser settings.</p></noscript>
+<main class="auth-wrap">
+  <section class="dsp-card auth-card" aria-labelledby="ttl">
+    <header class="auth-head">
+      <div class="brand-mark" aria-hidden="true">✚</div>
+      <h1 id="ttl">Discharge Summary Pro</h1>
+      <p>Gauhati Medical College &amp; Hospital<br>Surgical Gastroenterology, Liver Transplantation &amp; HPB</p>
+    </header>
+
+    <div id="note" class="notice" role="status" hidden></div>
+
+    <form id="signin" novalidate>
+      <label for="email">Hospital email</label>
+      <input id="email" type="email" autocomplete="username" inputmode="email" required autofocus>
+      <label for="pw">Password</label>
+      <div class="pw-wrap">
+        <input id="pw" type="password" autocomplete="current-password" required>
+        <button type="button" class="pw-toggle" aria-controls="pw" aria-pressed="false">Show</button>
+      </div>
+      <p class="form-err" id="err" role="alert"></p>
+      <button class="dsp-btn primary block" id="go" type="submit">Sign in</button>
+      <div class="auth-links"><button type="button" id="forgot">Forgot password?</button><span class="muted small">No public sign-up</span></div>
+    </form>
+
+    <form id="reset" novalidate hidden>
+      <p class="muted small" style="margin-top:14px">Enter your hospital email. If it belongs to an authorised account, a password-reset link will be sent to it.</p>
+      <label for="remail">Hospital email</label>
+      <input id="remail" type="email" autocomplete="username" inputmode="email" required>
+      <p class="form-err" id="rerr" role="alert"></p>
+      <button class="dsp-btn primary block" id="rgo" type="submit">Send reset link</button>
+      <div class="auth-links"><button type="button" id="back">← Back to sign in</button></div>
+    </form>
+
+    <footer class="auth-foot">Authorised clinicians only. Access to patient records is logged.<br>Designed by <b>Dr Akash Singh</b></footer>
+  </section>
+</main>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script type="module" src="js/login.js"></script>
+</body>
+</html>

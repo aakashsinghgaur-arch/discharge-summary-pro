@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Discharge Summary Pro</title>
+<meta name="description" content="Discharge summary editor — Surgical Gastroenterology, LT &amp; HPB, GMCH.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b4a85">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Discharge Summary">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
+<!-- form.css = the original stylesheet, unchanged; shell.css styles only the added application chrome -->
+<link rel="stylesheet" href="css/form.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body class="dsp-editor">
+<header class="ab" id="ab">
+  <a class="dsp-icon-btn" href="index.html" id="ab-back" aria-label="Back to dashboard" title="Back to dashboard">←</a>
+  <span class="brand-mark ab-mark" aria-hidden="true">✚</span>
+  <div class="ab-doc"><b id="ab-pt">Loading…</b><small id="ab-meta"></small></div>
+  <span id="ab-status"></span>
+  <button type="button" class="save-pill" id="save" aria-live="polite" title="Save status"></button>
+  <span class="ab-sp"></span>
+  <button type="button" class="dsp-btn sm" id="ab-share" hidden><span aria-hidden="true">👥</span><span class="lbl">Share</span></button>
+  <button type="button" class="dsp-btn sm primary" id="ab-flow" hidden></button>
+  <button type="button" class="dsp-icon-btn" id="ab-more" aria-label="More actions" title="More actions">⋯</button>
+  <button type="button" class="ab-acct" id="acct"></button>
+</header>
+<div id="ed-banners" class="ed-banners" aria-live="polite"></div>
+<div id="ed-boot" class="ed-boot" role="status"><span class="spin" aria-hidden="true"></span> Opening summary…</div>
+<noscript><p style="margin:0;padding:16px;font:15px sans-serif;background:#fff3cd;color:#664d03">This tool needs JavaScript. Please enable it in your browser settings.</p></noscript>
+<main id="dsp-main" hidden>
+<header class="hdr"><div class="lg">✚</div><div><b>Gauhati Medical College &amp; Hospital</b><span>Surgical Gastroenterology · Discharge Summary Builder</span></div><div id="chip" class="chip" hidden></div></header>
+<div class="prog"><i id="pb"></i></div>
+<nav id="nav" aria-label="Jump to section"></nav>
+<div class="tools"><button type="button" id="colA">Collapse all</button><button type="button" id="expA">Expand all</button><button type="button" id="ldb" title="Load a saved Discharge Summary file back into this page">Load from file</button><input type="file" id="ldf" hidden><button type="button" id="clrH" title="Forget all remembered suggestions">Forget remembered entries</button></div>
+<div id="form"></div>
+<div class="bar"><button id="copy"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy for Word</span></button><button id="show"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Preview</span></button><button id="prt"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span>Print</span></button><button id="word" title="Save as a Word file (Alt+W)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l1.5 5 1.5-4 1.5 4 1.5-5"/></svg><span>Save Word</span></button><button id="chk"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/><path d="m15 15 2 2 4-4"/></svg><span>Spelling</span></button><button id="clr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg><span>Clear all</span></button></div>
+<div id="msg">Fill in, tap Copy, then paste into a blank Word file.</div>
+<div id="paper" hidden></div>
+<div id="mp" hidden><div class="ia-bg"></div><div class="ia-sh"><div class="ia-h"><b id="mp-t">Add medicine</b><button type="button" id="mp-x" aria-label="Close">✕</button></div>
+<div id="mp-b"></div><div class="mp-f"><button type="button" id="mp-more">Save &amp; add another</button><button type="button" id="mp-save">Save medicine</button></div></div></div>
+<div id="sp" hidden></div>
+<div class="kbd-hint"><span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Copy for Word</span><span><kbd>Ctrl</kbd>+<kbd>P</kbd> Print</span><span><kbd>Alt</kbd>+<kbd>V</kbd> Preview</span><span><kbd>Alt</kbd>+<kbd>W</kbd> Save Word</span><span><kbd>Alt</kbd>+<kbd>S</kbd> Spelling</span><span><kbd>Alt</kbd>+<kbd>↑</kbd><kbd>↓</kbd> Jump between sections</span><span><kbd>Enter</kbd> next field</span><span><kbd>Ctrl</kbd>+<kbd>S</kbd> Save now</span></div>
+<footer class="cr">Designed by <b>Dr Akash Singh</b><span class="cr2">Saved automatically to the GMCH discharge summary server and visible only to doctors it is shared with. Please review the summary before it is issued.</span></footer>
+
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<!-- editor-shell.js loads the session and document, then injects js/form-engine.js (the original form script) -->
+<script type="module" src="js/editor-shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Discharge Summary Pro</title>
+<meta name="description" content="Fast, private discharge summary builder. Fill in, preview, print, or save as a Word (.docx) file. Works offline in your browser.">
+<meta name="theme-color" content="#0b4a85">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Discharge Summary">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b4a85'/%3E%3Cpath d='M18 14h22l8 8v28H18z' fill='%23fff'/%3E%3Cpath d='M40 14v8h8' fill='%23c9dcef'/%3E%3Cpath d='M24 31h20M24 38h20M24 45h12' stroke='%230b4a85' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b4a85'/%3E%3Cpath d='M18 14h22l8 8v28H18z' fill='%23fff'/%3E%3Cpath d='M40 14v8h8' fill='%23c9dcef'/%3E%3Cpath d='M24 31h20M24 38h20M24 45h12' stroke='%230b4a85' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* ===== Base ===== */
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]:not([hidden=until-found i]){display:none!important}
+/* ===== Design tokens ===== */
+:root{--bg:#eff2f7;--card:#fff;--field:#f6f8fb;--tx:#17212b;--mut:#5d6b7a;--bd:#dce2ea;--ac:#0b4a85;--ac2:#12809b;--acx:#fff;--danger:#b42318;
+--r:14px;--sh:0 1px 2px rgba(16,24,40,.05),0 4px 14px rgba(16,24,40,.05);--pad:clamp(10px,3.2vw,22px);
+color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--card:#161b22;--field:#1c222b;--tx:#e6edf3;--mut:#8b98a8;--bd:#2a323c;--ac:#6db0f5;--ac2:#4fc3d9;--acx:#0d1117;--danger:#f0867b}}
+:root[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--field:#1c222b;--tx:#e6edf3;--mut:#8b98a8;--bd:#2a323c;--ac:#6db0f5;--ac2:#4fc3d9;--acx:#0d1117;--danger:#f0867b}
+:root[data-theme="light"]{color-scheme:light}:root[data-theme="dark"]{color-scheme:dark}
+
+/* ===== Base ===== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:clamp(15px,.9vw + 11.5px,16.5px)/1.45 Inter,"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;-webkit-font-smoothing:antialiased;
+padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+main{width:100%;max-width:880px;margin:0 auto;padding:var(--pad) var(--pad) 28px}
+[hidden]{display:none!important}
+button{font:inherit;font-weight:600;color:var(--ac);background:transparent;border:1px solid var(--ac);border-radius:10px;padding:9px 14px;cursor:pointer;transition:transform .1s,opacity .15s,background .15s;-webkit-tap-highlight-color:transparent}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.45;cursor:default}
+@media (hover:hover){button:not(:disabled):hover{background:color-mix(in srgb,var(--ac) 9%,transparent)}}
+label{display:block;margin:14px 0 6px;font-size:12.5px;font-weight:600;color:var(--mut);letter-spacing:.1px}
+input,textarea,select{display:block;width:100%;min-height:44px;font:inherit;font-size:15.5px;color:var(--tx);background:var(--ib,var(--field));border:1px solid var(--bd);border-radius:10px;padding:0 12px;transition:border-color .15s,box-shadow .15s}
+select{padding-right:8px}
+textarea{padding:10px 12px;line-height:1.45;min-height:88px;resize:none;overflow:hidden}
+input::placeholder,textarea::placeholder{color:var(--mut);opacity:.65}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
+input[type=checkbox]{display:inline-block;width:18px;height:18px;min-height:0;padding:0;accent-color:var(--ac);flex:none}
+@media (hover:hover) and (pointer:fine){input,select{min-height:40px}}
+
+/* ===== Header ===== */
+.hdr{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 12px;padding:clamp(12px,2.4vw,18px) clamp(14px,3vw,22px);color:#fff;background:linear-gradient(120deg,#0a2f57,#0f5c9a 60%,#12809b);border-radius:18px;box-shadow:0 6px 18px rgba(10,47,87,.25)}
+.hdr .lg{width:42px;height:42px;flex:none;display:grid;place-items:center;font-size:21px;background:rgba(255,255,255,.18);border-radius:12px}
+.hdr b{display:block;font-size:clamp(16px,1.2vw + 13px,19px);line-height:1.2;letter-spacing:.2px}
+.hdr span{font-size:12.5px;opacity:.88}
+.chip{flex:1 1 100%;padding:6px 10px;font-size:12.5px;font-weight:500;background:rgba(255,255,255,.16);border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{height:4px;margin:0 2px 10px;background:var(--bd);border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac2),var(--ac));border-radius:4px;transition:width .35s ease}
+.tools{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}
+.tools button{padding:5px 12px;font-size:12px;font-weight:500;color:var(--mut);background:var(--card);border:1px solid var(--bd);border-radius:999px}
+
+/* ===== Section cards ===== */
+#form{counter-reset:s}
+fieldset{min-width:0;margin:0 0 14px;padding:0 clamp(12px,2.6vw,20px) 16px;background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--ac);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+#form legend{display:flex;align-items:center;gap:10px;float:left;width:100%;margin:0 0 4px;padding:13px 0 10px;font-size:clamp(15px,.7vw + 12.5px,17px);font-weight:700;color:var(--tx);border-bottom:1px solid var(--bd);cursor:pointer;-webkit-user-select:none;user-select:none}
+#form legend+*{clear:both}
+#form legend::before{counter-increment:s;content:counter(s);flex:none;display:grid;place-items:center;width:26px;height:26px;font-size:12.5px;color:#fff;background:linear-gradient(135deg,#0a2f57,#12809b);border-radius:8px}
+#form legend::after{content:"\25BE";margin-left:auto;color:var(--mut);font-size:13px;transition:transform .2s}
+fieldset.cl legend::after{transform:rotate(-90deg)}
+fieldset.cl>*:not(legend){display:none!important}
+.tg{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:12px 14px;font-size:14px;font-weight:600;color:var(--ac);background:var(--card);border:1.5px dashed color-mix(in srgb,var(--ac) 55%,transparent);border-radius:var(--r);cursor:pointer}
+
+/* field grid: 2 columns on phones, 3 on larger screens */
+.kvg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px}
+.kvg>.fld{min-width:0}
+.kvg>.fld.w2{grid-column:1/-1}
+@media (min-width:640px){.kvg{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:16px}}
+.hint{margin-top:5px;font-size:12px;color:var(--mut)}
+.hint b{color:var(--ac);font-weight:600}
+
+/* date placeholder overlay (iOS shows blank dates otherwise) */
+.dw{position:relative;min-width:0}
+.dw input{width:100%}
+
+/* ===== Entry bar (pick investigation, then Add) ===== */
+.eb{--ib:var(--card);display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:8px;margin:10px 0 4px;padding:10px;background:color-mix(in srgb,var(--bg) 60%,var(--card));border:1.5px dashed color-mix(in srgb,var(--ac) 50%,transparent);border-radius:var(--r);transition:border-color .15s}
+.eb.err{border-color:var(--danger)}.eb.err .es,.eb.err .en{border-color:var(--danger)}
+.eb input{height:42px;min-height:42px;padding:0 10px;font-size:15px}
+.eb>.es,.eb>.en{grid-column:1/-1}
+.eb>.es{padding-right:36px;font-weight:600;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a94a0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m20 20-4.8-4.8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px}
+.eb[data-k=lab]>.en{grid-column:1}
+.eb .ed{font-size:14px;padding:0 8px}
+.eb .dw{grid-column:1}
+.eb .ea{grid-column:2;height:42px;padding:0 8px;font-size:15px;color:var(--acx);background:var(--ac);border-color:var(--ac)}
+@media (min-width:560px){
+ .eb{grid-template-columns:minmax(0,1fr) 150px 100px}
+ .eb>.es{grid-column:1;grid-row:1}.eb .dw{grid-column:2;grid-row:1}.eb .ea{grid-column:3;grid-row:1}
+ .eb>.en{grid-column:1/3;grid-row:2}.eb[data-k=lab]>.en{grid-column:1;grid-row:2}.eb>.eu{grid-column:2/4;grid-row:2}
+}
+
+/* ===== Entry rows ===== */
+.row{--ib:var(--card);position:relative;margin:8px 0;background:color-mix(in srgb,var(--bg) 65%,var(--card));border:1px solid var(--bd);border-radius:12px}
+.row .x{width:28px;height:28px;min-height:0;padding:0;display:grid;place-items:center;font-size:12px;color:var(--danger);border-color:var(--bd);border-radius:50%}
+.row .more{grid-column:1/-1;display:flex}
+.row .more button{width:auto;height:24px;padding:2px;font-size:12.5px;line-height:1.2;font-weight:600;color:var(--ac);white-space:nowrap;border:0;border-radius:6px}
+.row.cont .more{display:none}
+/* lab row: one line */
+.row.lr{display:grid;grid-template-columns:112px minmax(0,1.3fr) minmax(60px,1fr) minmax(72px,.8fr) 28px;gap:8px;align-items:center;padding:8px 10px 4px}
+.lr input,.lr select{height:34px;min-height:34px;padding:2px 6px;font-size:13px;border-radius:8px}
+.lr .d{font-size:13px;padding:2px 4px}
+.lr .tn{font-size:14px;font-weight:600;line-height:1.15;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lr .ut{max-width:70px;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr .u,.lr .uc{width:100%}
+.lr .u{appearance:none;-webkit-appearance:none;padding:2px 4px;text-overflow:ellipsis}
+@media (max-width:560px){
+ .row.lr{grid-template-columns:98px minmax(0,1fr) 50px 64px 26px;gap:5px;padding:6px 6px 3px}
+ .lr .d{font-size:11.5px}.lr .tn{font-size:12.5px}.row .x{width:26px;height:26px}
+}
+/* other-investigation card: name, date, remove, then result */
+.row.ot{display:grid;grid-template-columns:minmax(0,1fr) 116px 28px;gap:6px;align-items:center;padding:8px}
+.ot .on,.ot .od{height:36px;min-height:36px;padding:2px 8px;font-size:14px}
+.ot .on{font-weight:600}
+.ot .od{font-size:12.5px;padding:2px 4px}
+.ot .ox{grid-column:1/-1;min-height:40px;padding:8px 10px;font-size:14.5px}
+.ot .more{grid-row:3}
+/* quick-pick under list boxes */
+.qp{margin:0 0 8px}
+.qs{height:38px;min-height:38px;padding:0 10px 0 34px;font-size:14px;border-style:dashed;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a94a0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m20 20-4.8-4.8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 11px center;background-size:16px}
+
+/* ===== Procedures ===== */
+#procs{counter-reset:pr}
+.row.pr{counter-increment:pr;display:grid;grid-template-columns:24px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:10px}
+.row.pr::before{content:counter(pr);display:grid;place-items:center;width:24px;height:24px;font-size:12px;font-weight:700;color:var(--acx);background:var(--ac);border-radius:7px}
+.pr .pn{height:38px;min-height:38px;padding:0 10px;font-size:14.5px;font-weight:600}
+.pr .pm{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pr .pm input,.pr .pm select{height:38px;min-height:38px;padding:0 10px;font-size:14px}
+.pm .dw{order:1}.pm .po{order:2}.pm .pa{order:3;grid-column:1/-1}.pm .pao{order:4;grid-column:1/-1}
+@media (min-width:560px){.pr .pm{grid-template-columns:150px minmax(0,1fr) 150px}.pm .pa{order:2;grid-column:auto}.pm .po{order:3}}
+
+/* ===== Date: type or pick ===== */
+.dw{--dcw:38px}
+.dw::after{content:"";display:block;position:absolute;right:0;top:0;bottom:0;width:var(--dcw);background:no-repeat center/17px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a94a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4.5' width='18' height='16.5' rx='3'/%3E%3Cpath d='M3 10h18M8 2.5v4M16 2.5v4'/%3E%3C/svg%3E");border-radius:0;pointer-events:none}
+.dw.has::after,.dw:focus-within::after{display:block}
+.dw .dt{padding-right:var(--dcw);min-width:0;font-variant-numeric:tabular-nums}
+.dw .dt.bad{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--field))}
+.dw>input[type=date]{position:absolute!important;right:0;top:0;width:var(--dcw)!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;opacity:0;z-index:2;cursor:pointer;-webkit-appearance:none;appearance:none}
+.dw>input[type=date]::-webkit-calendar-picker-indicator{display:block!important;position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.eb .dt{height:42px;font-size:14px;padding-left:10px}
+.lr .dw{--dcw:24px}.lr .dt{font-size:12.5px;padding-left:6px}.lr .dw::after{background-size:14px}
+.ot .dw{--dcw:28px}.ot .dt{font-size:13px;padding-left:8px}
+@media (max-width:560px){.lr .dt{font-size:11.5px;padding-left:5px}}
+/* per-procedure findings */
+.pr .pf{grid-column:1/-1;display:grid;gap:6px}
+.pr .pf label{font-size:12px;font-weight:600;color:var(--mut)}.pr .pf small{font-weight:400}
+.pr .px,.pr .pxc{min-height:44px;padding:8px 10px;font-size:14px}
+.pr .pq{width:100%}
+
+/* ===== Medicines ===== */
+.pre{margin:8px 0 2px}
+.pre .addinv{width:100%;padding:12px;font-size:15px;color:var(--acx);background:var(--ac);border-radius:12px}
+#meds .mi{display:flex;align-items:flex-start;gap:10px;margin:6px 0;padding:10px;background:color-mix(in srgb,var(--bg) 65%,var(--card));border:1px solid var(--bd);border-radius:12px;cursor:pointer}
+.mi .no{flex:none;display:grid;place-items:center;width:22px;height:22px;margin-top:1px;font-size:12px;font-weight:700;color:var(--acx);background:var(--ac);border-radius:7px}
+.mi .tx{flex:1;min-width:0;font-size:14.5px;line-height:1.35}
+.mi .tx span{color:var(--mut)}
+.mi .x{flex:none;width:28px;height:28px;padding:0;font-size:12px;color:var(--danger);border-color:var(--bd);border-radius:50%}
+
+/* ===== Pop-ups: bottom sheet on phones, centred dialog on larger screens ===== */
+#mp{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.ia-bg{position:absolute;inset:0;background:rgba(10,20,30,.5)}
+.ia-sh{position:relative;width:100%;max-width:560px;max-height:88vh;max-height:88dvh;display:flex;flex-direction:column;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.3)}
+@media (min-width:700px){#mp{align-items:center}.ia-sh{border-radius:20px;padding-bottom:16px;box-shadow:0 20px 60px rgba(0,0,0,.35)}}
+.ia-h{display:flex;align-items:center;justify-content:space-between;font-size:17px}
+.ia-h button{width:36px;height:36px;padding:0;color:var(--mut);border-color:var(--bd);border-radius:50%}
+#mp-b{flex:1;min-height:120px;margin:10px -4px;padding:0 4px;overflow:auto}
+#mp-b label{margin:14px 0 6px}
+.ch{display:flex;flex-wrap:wrap;gap:6px}
+.ch button{padding:6px 12px;font-size:13.5px;font-weight:500;color:var(--tx);background:var(--field);border:1px solid var(--bd);border-radius:999px}
+.ch button.on{color:var(--acx);background:var(--ac);border-color:var(--ac)}
+.mp-du{display:flex;align-items:flex-start;gap:8px}.mp-du input{flex:0 0 72px}
+.mp-f{display:flex;gap:8px}
+.mp-f button{flex:1;padding:13px 8px;font-size:15px;border-radius:12px}
+#mp-save{color:var(--acx);background:var(--ac)}
+
+/* ===== Search list ===== */
+#cbp{position:fixed;z-index:70;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 12px 32px rgba(16,24,40,.3)}
+#cbp .cg{position:sticky;top:0;z-index:1;padding:7px 12px 4px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);background:var(--card)}
+#cbp .ci{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;font-size:15px;line-height:1.25;cursor:pointer;border-top:1px solid color-mix(in srgb,var(--bd) 55%,transparent)}
+#cbp .ci em{font-style:normal;font-size:12px;color:var(--mut);white-space:nowrap}
+#cbp .ci b{color:var(--ac)}
+#cbp .ci.on,#cbp .ci:active{background:color-mix(in srgb,var(--ac) 14%,var(--card))}
+#cbp .ci.cu{color:var(--ac);font-weight:600}
+
+/* ===== Action bar ===== */
+.bar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;gap:4px;margin:12px 0 6px;padding:6px;background:var(--card);border:1px solid var(--bd);border-radius:20px;box-shadow:0 10px 28px rgba(16,24,40,.2)}
+.bar button{flex:1;min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 2px 7px;font-size:11.5px;line-height:1.15;white-space:nowrap;border:0;border-radius:14px}
+.bar button svg{width:20px;height:20px;flex:none}
+.bar #copy{flex:1.45;color:#fff;background:linear-gradient(135deg,#0b3d6e,#1478c8);box-shadow:0 4px 12px rgba(18,128,155,.35)}
+.bar #clr{color:var(--danger)}
+@media (min-width:700px){.bar{max-width:640px;margin-left:auto;margin-right:auto}.bar button{flex-direction:row;gap:8px;min-height:48px;font-size:14px}}
+@media (max-width:360px){.bar button{font-size:10.5px}}
+#msg{min-height:18px;margin-top:8px;padding-bottom:10px;text-align:center;font-size:12.5px;color:var(--mut)}
+
+/* ===== Preview, spelling, footer ===== */
+#paper{scroll-margin-top:140px;margin:10px 0 24px;padding:clamp(16px,4vw,30px);overflow-x:auto;color:#000;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 4px 18px rgba(16,24,40,.16);font-family:Calibri,Arial,sans-serif;font-size:14px}
+#paper::before{content:"Document preview";display:block;margin-bottom:14px;font:600 11px "Segoe UI",system-ui,sans-serif;letter-spacing:1.2px;text-transform:uppercase;color:#7a8794}
+#sp{position:fixed;left:8px;right:8px;bottom:8px;z-index:55;max-width:720px;max-height:55vh;margin:0 auto;padding:12px 14px 14px;overflow:auto;background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--ac);border-radius:16px;box-shadow:0 12px 36px rgba(16,24,40,.35)}
+#sp .h{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:600;color:var(--mut)}
+#sp .m{margin:6px 0 4px;font-size:14px;font-weight:700}
+#sp .c{margin:4px 0 8px;padding:8px 10px;font-size:14px;line-height:1.5;background:var(--bg);border-radius:10px;word-break:break-word}
+#sp mark{padding:0 2px;color:#000;background:#fde68a;border-radius:4px}
+#sp .b{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+#sp .b button{padding:8px 12px;font-size:14px}
+#sp .b button.p{color:var(--acx);background:var(--ac)}
+#sp .b button.q{font-weight:500;color:var(--mut);border-color:var(--bd)}
+.cr{padding:8px 0 22px;text-align:center;font-size:12.5px;letter-spacing:.2px;color:var(--mut)}
+.cr b{font-weight:600;color:var(--tx)}
+.cr .cr2{display:block;margin-top:4px;font-size:11.5px;opacity:.85}
+
+/* ===== Print ===== */
+#printbox{display:none}
+@page{size:A4;margin:16mm 16mm 18mm 18mm;@bottom-center{content:"Page " counter(page) " of " counter(pages);font:9pt Arial,Helvetica,sans-serif;color:#000}}
+@media print{
+html,body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
+body>*:not(#printbox){display:none!important}
+#printbox{display:block!important;font-family:Arial,Helvetica,sans-serif;font-size:10.5pt;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printbox p{orphans:3;widows:3}
+}
+
+/* ===== Polish: focus, touch, keyboard ===== */
+button,legend,.tg,.qs,.ci{touch-action:manipulation}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
+#form legend{cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:8px}
+#form legend:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.tg{cursor:pointer}.tg:focus-within{outline:2px solid var(--ac);outline-offset:2px}
+.kbd-hint{display:none;margin:2px 0 10px;text-align:center;font-size:12px;line-height:2;color:var(--mut)}
+.kbd-hint kbd{display:inline-block;margin:0 1px;padding:0 6px;font:600 11px/18px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-bottom-width:2px;border-radius:5px}
+.kbd-hint span{margin:0 8px;white-space:nowrap}
+@media (pointer:fine){.kbd-hint{display:block}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media (pointer:coarse){
+ button{min-height:44px}
+ input,textarea,select{min-height:48px;font-size:16px}
+ input[type=checkbox]{width:24px;height:24px;min-height:0}
+ .tools button{min-height:40px;padding:8px 16px;font-size:13px}
+ .tg{min-height:52px;padding:14px 16px}
+ #form legend{padding:16px 0 12px;min-height:52px}
+ #form legend::after{font-size:16px;padding:8px}
+ .qs{height:46px;min-height:46px;font-size:15px}
+ .eb input,.eb .ea,.eb select{height:48px;min-height:48px}
+ .row .x{width:38px;height:38px}
+ .row.pr{grid-template-columns:24px minmax(0,1fr) 38px}
+ .row.ot{grid-template-columns:minmax(0,1fr) 124px 38px}
+ .pr .pn,.pr .pm input,.pr .pm select{height:46px;min-height:46px;font-size:16px}
+ .ot .on,.ot .od,.ot .dt{height:44px;min-height:44px;font-size:15px}
+ .row.lr{grid-template-columns:112px minmax(0,1.3fr) minmax(60px,1fr) minmax(72px,.8fr) 38px}
+ .lr input,.lr select{height:42px;min-height:42px;font-size:14px}
+ .row .more button{height:40px;padding:6px 10px;font-size:13.5px}
+ #cbp .ci{min-height:48px;padding:12px 14px;font-size:16px}
+ .dw{--dcw:44px}.lr .dw{--dcw:30px}.ot .dw{--dcw:34px}
+ .lr .dt{font-size:13px}
+ .chip{padding:8px 12px}
+ .bar button{min-height:56px}
+}
+@media (pointer:coarse) and (max-width:560px){
+ .row.lr{grid-template-columns:104px minmax(0,1fr) 52px 66px 38px;gap:4px;padding:6px 4px 3px}
+ .lr .dt{font-size:12.5px;padding-left:5px;padding-right:var(--dcw)}
+}
+
+/* search-and-add sits above its list */
+.qs{border-style:solid;background-color:color-mix(in srgb,var(--ac) 5%,var(--field));border-color:color-mix(in srgb,var(--ac) 28%,var(--bd))}
+.pr .pf{gap:0}.pr .pf label{margin:6px 0 6px}.pr .pf .qs{margin-bottom:8px}
+.pr .pf+.pf{margin-top:6px;padding-top:6px;border-top:1px dashed var(--bd)}
+
+/* ===== Final polish layer ===== */
+::selection{background:color-mix(in srgb,var(--ac) 28%,transparent)}
+body{background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 7%,var(--bg)) 0,var(--bg) 340px) no-repeat,var(--bg)}
+label{font-size:13px;color:color-mix(in srgb,var(--tx) 72%,var(--mut));letter-spacing:.15px}
+label .hn,label small{font-weight:500;font-size:11.5px;color:var(--mut);letter-spacing:0}
+input,textarea,select{border-color:color-mix(in srgb,var(--bd) 90%,var(--tx) 6%);border-radius:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) input,:root:not([data-theme=light]) textarea,:root:not([data-theme=light]) select{box-shadow:none}}
+@media (hover:hover){input:not(:focus):hover,textarea:not(:focus):hover,select:not(:focus):hover{border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}}
+textarea{min-height:68px}
+select{cursor:pointer}
+fieldset{transition:box-shadow .2s,border-color .2s}
+fieldset:focus-within{box-shadow:0 1px 2px rgba(16,24,40,.06),0 8px 26px color-mix(in srgb,var(--ac) 14%,transparent)}
+#form legend{letter-spacing:.1px}
+#form legend::after{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;transition:background .15s,transform .2s}
+@media (hover:hover){#form legend:hover::after{background:color-mix(in srgb,var(--ac) 10%,transparent)}}
+.qs{background-color:var(--card);border-color:color-mix(in srgb,var(--ac) 30%,var(--bd));box-shadow:0 1px 0 color-mix(in srgb,var(--ac) 8%,transparent)}
+.qs:focus{background-color:var(--card)}
+.qp{margin-bottom:6px}
+.tg{background:color-mix(in srgb,var(--ac) 5%,var(--card));border:1px solid color-mix(in srgb,var(--ac) 25%,var(--bd));border-radius:12px;box-shadow:var(--sh);transition:background .15s,border-color .15s}
+@media (hover:hover){.tg:hover{background:color-mix(in srgb,var(--ac) 10%,var(--card));border-color:var(--ac)}}
+.row{box-shadow:0 1px 2px rgba(16,24,40,.04);transition:border-color .15s,box-shadow .15s}
+@media (hover:hover){.row:hover{border-color:color-mix(in srgb,var(--ac) 35%,var(--bd));box-shadow:0 3px 12px rgba(16,24,40,.07)}}
+.eb{border-radius:14px;background:color-mix(in srgb,var(--ac) 3%,var(--card));border:1.5px dashed color-mix(in srgb,var(--ac) 35%,var(--bd))}
+.eb .ea{box-shadow:0 3px 10px color-mix(in srgb,var(--ac) 30%,transparent)}
+#msg{margin:14px auto 4px;max-width:560px;padding:8px 14px;text-align:center;font-size:13px;color:var(--mut);background:color-mix(in srgb,var(--card) 80%,transparent);border:1px solid var(--bd);border-radius:999px}
+.kbd-hint{max-width:760px;margin-left:auto;margin-right:auto}
+.cr{padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+.hdr{box-shadow:0 10px 28px rgba(10,47,87,.28),inset 0 1px 0 rgba(255,255,255,.18)}
+.bar{box-shadow:0 10px 32px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);border-radius:20px}
+@media (hover:hover) and (pointer:fine){
+ *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--mut) 45%,transparent) transparent}
+}
+
+/* ===== Section navigator + completion marks ===== */
+#nav{position:sticky;top:0;z-index:8;display:flex;gap:6px;margin:0 calc(var(--pad)*-1) 10px;padding:8px var(--pad);overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);border-bottom:1px solid transparent;transition:border-color .2s,box-shadow .2s}
+#nav::-webkit-scrollbar{display:none}
+#nav.st{border-bottom-color:var(--bd);box-shadow:0 6px 16px rgba(16,24,40,.06)}
+#nav button{flex:none;scroll-snap-align:start;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--mut);background:var(--card);border:1px solid var(--bd);border-radius:999px;white-space:nowrap}
+#nav button b{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;font-size:10.5px;color:var(--mut);background:color-mix(in srgb,var(--mut) 14%,transparent);border-radius:9px}
+#nav button.ok b{color:#fff;background:#1f9d6b}
+#nav button.on{color:var(--acx);background:var(--ac);border-color:var(--ac)}
+#nav button.on b{color:var(--ac);background:var(--acx)}
+@media (hover:hover){#nav button:not(.on):hover{color:var(--ac);border-color:var(--ac);background:color-mix(in srgb,var(--ac) 7%,var(--card))}}
+@media (pointer:coarse){#nav button{min-height:42px;padding:8px 14px;font-size:13px}}
+html{scroll-padding-top:64px}
+#form legend .dn{display:none;margin-left:2px;padding:2px 9px;font-size:11px;font-weight:700;color:#1f7a55;background:color-mix(in srgb,#1f9d6b 14%,transparent);border-radius:999px;letter-spacing:.2px}
+fieldset.ok legend .dn{display:inline-block}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #form legend .dn{color:#6fe0ae}}
+
+/* ===== Airier layout ===== */
+fieldset{margin-bottom:18px;border-top-width:2px;padding-bottom:18px}
+#form legend{padding:15px 0 12px;margin-bottom:6px}
+.kvg{gap:14px 14px}
+.fld label,label{margin-top:16px}
+.kvg .fld label{margin-top:0}
+/* entry bars: no box-in-a-box */
+.eb{background:transparent;border:0;padding:0;margin:12px 0 0;border-radius:0}
+.row+.eb,#procs+.eb{margin-top:12px}
+.row{margin:10px 0}
+/* procedure card: details open only when used */
+.row.pr{padding:14px;gap:10px;background:var(--card)}
+.pr .pm{gap:10px}
+.pr .pf>label{cursor:pointer;display:flex;align-items:center;gap:7px;margin:10px 0 8px;-webkit-user-select:none;user-select:none}
+.pr .pf>label::before{content:"\25BE";font-size:11px;color:var(--mut)}
+.pr .pf+.pf{border-top:0;padding-top:0;margin-top:0}
+.pr .pf.c>*:not(label){display:none}
+.pr .pf.c small{display:none}
+.pr .pf.c>label{margin:2px 0 0;padding:10px 14px;font-size:13.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 5%,var(--card));border:1px solid color-mix(in srgb,var(--ac) 22%,var(--bd));border-radius:11px}
+.pr .pf.c>label::before{content:"+";font-size:17px;line-height:1;font-weight:700;color:var(--ac)}
+@media (hover:hover){.pr .pf.c>label:hover{background:color-mix(in srgb,var(--ac) 11%,var(--card));border-color:var(--ac)}}
+.pr .pf>label:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+@media (pointer:coarse){.pr .pf.c>label{min-height:46px}}
+.pr .pf .qs{margin-bottom:10px}
+.pr .px,.pr .pxc{background:var(--field)}
+.kvg{padding-top:12px;row-gap:18px}
+.fld .qp{margin-top:2px}
+#form fieldset>*:not(legend){clear:both}
+
+/* ===== Compact search + list (attached) ===== */
+.qs{height:34px;min-height:34px;font-size:13.5px;padding-left:32px;border-radius:10px 10px 0 0;border-bottom-color:color-mix(in srgb,var(--ac) 18%,var(--bd));background-position:11px center}
+.qp{margin:0}.pr .pf .qs,.fld .qp .qs{margin:0}
+.qp+textarea,.qs+textarea{border-top:0;border-radius:0 0 10px 10px;min-height:52px;padding-top:8px}
+.qs:focus{border-radius:10px 10px 0 0}
+.pr .pf>label{margin:8px 0 6px}
+.pr .pf .px,.pr .pf .pxc{min-height:48px}
+@media (pointer:coarse){.qs{height:42px;min-height:42px;font-size:15px}.qp+textarea,.qs+textarea{min-height:56px}}
+
+/* ===== Visual refinement: colour-coded sections ===== */
+fieldset{--g1:#0a2f57;--g2:#12809b;position:relative;border-top:1px solid var(--bd);box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.05)}
+fieldset::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--g1),var(--g2))}
+fieldset[data-c=i]{--g1:#0b6b63;--g2:#2bb59a}
+fieldset[data-c=d]{--g1:#3b3f9e;--g2:#7a6ff0}
+fieldset[data-c=s]{--g1:#3b4a5c;--g2:#7b8aa0}
+fieldset[data-c=x]{--g1:#8a4b0f;--g2:#e0953a}
+#form legend{padding-top:20px}
+#form legend::before{background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 3px 8px color-mix(in srgb,var(--g1) 35%,transparent);width:28px;height:28px;border-radius:9px}
+#form legend{font-size:clamp(15.5px,.7vw + 13px,17.5px)}
+fieldset:focus-within{box-shadow:0 1px 2px rgba(16,24,40,.06),0 10px 30px color-mix(in srgb,var(--g1) 16%,transparent)}
+fieldset:focus-within input:focus,fieldset:focus-within textarea:focus,fieldset:focus-within select:focus{border-color:var(--g1);box-shadow:0 0 0 3px color-mix(in srgb,var(--g1) 20%,transparent)}
+.tg{border-left:4px solid var(--ac);padding-left:12px}
+.eb .ea{background:linear-gradient(135deg,var(--g1,#0b3d6e),var(--g2,#1478c8));border-color:transparent}
+.row.pr::before{background:linear-gradient(135deg,var(--g1,#0a2f57),var(--g2,#12809b))}
+#nav button.on{background:linear-gradient(135deg,#0a2f57,#12809b);border-color:transparent;color:#fff}
+.hdr{position:relative;overflow:hidden}
+.hdr::after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 65%);pointer-events:none}
+.tools button{box-shadow:0 1px 2px rgba(16,24,40,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) fieldset{--g1:#2a6fb5;--g2:#3fb6c9}:root:not([data-theme=light]) fieldset[data-c=i]{--g1:#1f9a8c;--g2:#4fd1b5}:root:not([data-theme=light]) fieldset[data-c=d]{--g1:#6a6fe0;--g2:#9a8cf7}}
+#nav{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+#nav.st{background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4)}
+
+/* ===== Forget remembered entries ===== */
+#cbp .ci-x{flex:none;width:30px;height:30px;min-height:0;padding:0;display:grid;place-items:center;font-size:12px;line-height:1;color:var(--mut);background:transparent;border:0;border-radius:50%;opacity:.7}
+#cbp .ci-x:hover,#cbp .ci-x:focus-visible{color:var(--danger);background:color-mix(in srgb,var(--danger) 12%,transparent);opacity:1}
+#cbp .cl-wrap{position:sticky;bottom:0;padding:6px;background:var(--card);border-top:1px solid var(--bd)}
+#cbp .cl-all{width:100%;min-height:36px;padding:6px 10px;font-size:12.5px;font-weight:600;color:var(--danger);background:transparent;border:1px dashed color-mix(in srgb,var(--danger) 45%,var(--bd));border-radius:9px}
+#cbp .cl-all.arm{color:#fff;background:var(--danger);border-style:solid}
+@media (pointer:coarse){#cbp .ci-x{width:40px;height:40px}#cbp .cl-all{min-height:44px}}
+@media (max-width:420px){.bar{gap:2px;padding:5px}.bar button{font-size:10.5px;padding:8px 1px 7px}.bar button svg{width:19px;height:19px}}
+</style>
+</head>
+<body>
+<noscript><p style="margin:0;padding:16px;font:15px sans-serif;background:#fff3cd;color:#664d03">This tool needs JavaScript. Please enable it in your browser settings.</p></noscript>
+<main>
+<header class="hdr"><div class="lg">✚</div><div><b>Gauhati Medical College &amp; Hospital</b><span>Surgical Gastroenterology · Discharge Summary Builder</span></div><div id="chip" class="chip" hidden></div></header>
+<div class="prog"><i id="pb"></i></div>
+<nav id="nav" aria-label="Jump to section"></nav>
+<div class="tools"><button type="button" id="colA">Collapse all</button><button type="button" id="expA">Expand all</button><button type="button" id="ldb" title="Load a saved Discharge Summary file back into this page">Load from file</button><input type="file" id="ldf" hidden><button type="button" id="clrH" title="Forget all remembered suggestions">Forget remembered entries</button></div>
+<div id="form"></div>
+<div class="bar"><button id="copy"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy for Word</span></button><button id="show"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Preview</span></button><button id="prt"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span>Print</span></button><button id="word" title="Save as a Word file (Alt+W)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l1.5 5 1.5-4 1.5 4 1.5-5"/></svg><span>Save Word</span></button><button id="chk"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/><path d="m15 15 2 2 4-4"/></svg><span>Spelling</span></button><button id="clr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg><span>Clear all</span></button></div>
+<div id="msg">Fill in, tap Copy, then paste into a blank Word file.</div>
+<div id="paper" hidden></div>
+<div id="mp" hidden><div class="ia-bg"></div><div class="ia-sh"><div class="ia-h"><b id="mp-t">Add medicine</b><button type="button" id="mp-x" aria-label="Close">✕</button></div>
+<div id="mp-b"></div><div class="mp-f"><button type="button" id="mp-more">Save &amp; add another</button><button type="button" id="mp-save">Save medicine</button></div></div></div>
+<div id="sp" hidden></div>
+<div class="kbd-hint"><span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Copy for Word</span><span><kbd>Ctrl</kbd>+<kbd>P</kbd> Print</span><span><kbd>Alt</kbd>+<kbd>V</kbd> Preview</span><span><kbd>Alt</kbd>+<kbd>W</kbd> Save Word</span><span><kbd>Alt</kbd>+<kbd>S</kbd> Spelling</span><span><kbd>Alt</kbd>+<kbd>↑</kbd><kbd>↓</kbd> Jump between sections</span><span><kbd>Enter</kbd> next field</span></div>
+<footer class="cr">Designed by <b>Dr Akash Singh</b><span class="cr2">Your entries are stored only in this browser and never uploaded. Please review the summary before it is issued.</span></footer>
+</main>
+<script>
+var S=[
+{t:"Patient details",kv:1,f:[["Name","t"],["Age","t"],["Sex","s:Male,Female,Other"],["Address","t"],["Hospital No","t"],["MRD No","t"],["IRN","t"],["C/O","t"],["Consultant","t"],["Date of admission","d"],["Date of discharge","d"],["Weight (kg)","t"],["Height (cm)","t"],["BMI","t"],["Blood group","t"],["PS (ECOG)","t"]]},
+{t:"Diagnosis",f:[["Diagnosis","p","n"],["Co-morbidities","p"]]},
+{t:"Vaccination status",opt:"vacc",f:[["Pre-operative vaccination status","p"]]},
+{t:"Management and procedure",f:[["Type of management","s:Conservative / medical,Surgical","k"],["Conservative / medical management details","p",0,"Conservative / medical"],["__proc","x",0,"Surgical"],["Complications","p","b"],["Plan","p"]]},
+{t:"Blood transfusion",opt:"bt",f:[["Blood transfusion details","p"]]},
+{t:"History",f:[["History of presenting illness","p"]]},
+{lab:"pre",t:"Pre-op laboratory investigations"},
+{t:"Other pre-op investigations",ot:"pre",f:[]},
+{lab:"post",t:"Post-op laboratory investigations"},
+{t:"Other post-op investigations",ot:"post",f:[]},
+{t:"Imaging",ot:"img",f:[]},
+{t:"Histopathology",ot:"hpe",f:[]},
+{t:"Consultations and referrals",opt:"cons",f:[["Consultations and referrals","p"]]},
+{t:"Hospital course",f:[["Course during hospital stay","p"]]},
+{med:1,t:"Treatment at discharge"},
+{t:"Advice and care",f:[["Advice at discharge","p"],["Wound and drain care","p"],["Warning signs: return to emergency if","p","b"]]},
+{t:"Condition at discharge",opt:"cond",f:[["Condition at discharge","p"]]},
+{t:"Follow-up",opt:"fu",f:[["Follow-up date and instructions","p"]]},
+{t:"Sign-off",so:1,f:[["Prepared by (Resident)","t"],["Designation of resident","t"],["Verified by (Consultant)","t"],["Emergency contact number","t"]]}
+];
+var mg=["mg/dL","µmol/L"],gd=["g/dL","g/L"],ul=["U/L","IU/L"],sc=["mmol/L","mEq/L"],gl=["mg/dL","mmol/L"];
+var U={"Hemoglobin (Hb)":gd,"TC (WBC)":["cells/cu.mm","x10³/µL","x10⁹/L"],"Platelets":["/cu.mm","lakh/cu.mm","x10³/µL"],
+"Creatinine":mg,"Urea":["mg/dL","mmol/L"],"Sodium (Na)":sc,"Potassium (K)":sc,
+"Total bilirubin":mg,"Conjugated bilirubin":mg,"Unconjugated bilirubin":mg,"AST":ul,"ALT":ul,"ALP":ul,"Total protein":gd,"Albumin":gd,
+"PT":["sec"],"INR":[""],"aPTT":["sec"],"CRP":["mg/L","mg/dL"],"Procalcitonin":["ng/mL"],
+"RBS":gl,"FBS":gl,"HbA1c":["%"],"TSH":["mIU/L","µIU/mL"],"Ceruloplasmin":["mg/dL"],
+"Serum iron":["µg/dL","µmol/L"],"TIBC":["µg/dL","µmol/L"],"Iron saturation":["%"],"Ferritin":["ng/mL"],
+"Drain fluid amylase":["U/L"],"Drain fluid lipase":["U/L"],"Serum amylase":["U/L"],"Serum lipase":["U/L"],
+"PPBS":gl,"Free T3":["pg/mL","pmol/L"],"Free T4":["ng/dL","pmol/L"],"T3 (total)":["ng/dL","nmol/L"],"T4 (total)":["µg/dL","nmol/L"],
+"Total cholesterol":gl,"Triglycerides":gl,"HDL cholesterol":gl,"LDL cholesterol":gl,"VLDL cholesterol":gl,
+"Urine colour":[""],"Urine appearance":[""],"Urine pH":[""],"Urine specific gravity":[""],"Urine albumin":[""],"Urine sugar":[""],"Urine ketones":[""],"Urine bilirubin":[""],"Urine urobilinogen":[""],"Urine pus cells":["/hpf"],"Urine RBC":["/hpf"],"Urine epithelial cells":["/hpf"],"Urine casts":[""],"Urine crystals":[""],"Urine bacteria":[""],
+"AFP":["ng/mL","IU/mL"],"CEA":["ng/mL"],"CA 19-9":["U/mL"],"CA 125":["U/mL"],"Serum calcium":["mg/dL","mmol/L"],
+"PCV (Hct)":["%"],"RBC count":["million/cu.mm","x10¹²/L"],"MCV":["fL"],"MCH":["pg"],"MCHC":["g/dL"],"RDW":["%"],"Neutrophils":["%"],"Lymphocytes":["%"],"Eosinophils":["%"],"Monocytes":["%"],"Basophils":["%"],"Reticulocyte count":["%"],"Peripheral smear":[""],
+"GGT":ul,"Globulin":gd,
+"Chloride (Cl)":sc,"Bicarbonate (HCO3)":sc,"Ionised calcium":["mmol/L","mg/dL"],"Magnesium":["mg/dL","mmol/L"],"Phosphate":["mg/dL","mmol/L"],
+"aPTT":["sec"],"Fibrinogen":["mg/dL","g/L"],"D-dimer":["ng/mL FEU","µg/mL"],"Bleeding time":["min"],"Clotting time":["min"],
+"ESR":["mm/hr"],"IL-6":["pg/mL"],
+"ABG pH":[""],"pCO2":["mmHg","kPa"],"pO2":["mmHg","kPa"],"ABG HCO3":sc,"Base excess":["mmol/L"],"SaO2":["%"],"Lactate":["mmol/L","mg/dL"],
+"Troponin I":["ng/mL","ng/L"],"Troponin T":["ng/L","ng/mL"],"CK-MB":ul,"CPK":ul,"NT-proBNP":["pg/mL"],"LDH":ul,
+"Stool colour":[""],"Stool consistency":[""],"Stool mucus":[""],"Stool pus cells":["/hpf"],"Stool RBC":["/hpf"],"Stool ova/cyst":[""],"Stool occult blood":[""],
+"HBsAg":[""],"Anti-HCV":[""],"HIV I/II":[""],"Anti-HBs":["mIU/mL"],"Anti-HBc (total)":[""],"HBeAg":[""],"HBV DNA":["IU/mL","copies/mL"],"HCV RNA":["IU/mL","copies/mL"],
+"ANA":[""],"ASMA":[""],"AMA":[""],"Anti-LKM":[""],"IgG":["mg/dL","g/L"],"IgG4":["mg/dL","g/L"],
+"CA 15-3":["U/mL"],"PSA":["ng/mL"],"PIVKA-II":["mAU/mL"],"Chromogranin A":["ng/mL"],"Beta-hCG":["mIU/mL"],
+"Serum cortisol":["µg/dL","nmol/L"],"ACTH":["pg/mL"],"PTH":["pg/mL","pmol/L"],"Insulin (fasting)":["µIU/mL"],"C-peptide":["ng/mL"],"Calcitonin":["pg/mL"],
+"Vitamin D (25-OH)":["ng/mL","nmol/L"],"Vitamin B12":["pg/mL","pmol/L"],"Folate":["ng/mL","nmol/L"],"Zinc":["µg/dL"],
+"Ascitic protein":gd,"Ascitic albumin":gd,"SAAG":gd,"Ascitic TLC":["cells/cu.mm"],"Ascitic neutrophils (PMN)":["cells/cu.mm"],"Ascitic glucose":gl,"Ascitic LDH":ul,"Ascitic ADA":ul,
+"Drain fluid bilirubin":mg,"Drain fluid triglycerides":gl,"Drain fluid protein":gd,"Drain fluid creatinine":mg,
+"Uric acid":mg,"BUN":mg,"eGFR":["mL/min/1.73 m²"],"Ammonia":["µg/dL","µmol/L"],"Serum osmolality":["mOsm/kg"],"Homocysteine":["µmol/L"],
+"24-hr urine protein":["mg/24 h","g/24 h"],"Urine creatinine":mg,"Urine sodium":sc,"Urine protein/creatinine ratio":[""],
+"Faecal calprotectin":["µg/g"],"Faecal elastase":["µg/g"]};
+var PR={CBC:["Hemoglobin (Hb)","TC (WBC)","Platelets"],
+CBCx:["PCV (Hct)","RBC count","MCV","MCH","MCHC","RDW","Neutrophils","Lymphocytes","Eosinophils","Monocytes","Basophils","Reticulocyte count","Peripheral smear"],
+LFT:["Total bilirubin","Conjugated bilirubin","Unconjugated bilirubin","AST","ALT","ALP","GGT","Total protein","Albumin","Globulin"],
+RFT:["Creatinine","Urea","Sodium (Na)","Potassium (K)"],
+Minerals:["Chloride (Cl)","Bicarbonate (HCO3)","Serum calcium","Ionised calcium","Magnesium","Phosphate"],
+Coag:["PT","INR","aPTT","Fibrinogen","D-dimer","Bleeding time","Clotting time"],
+Inflam:["CRP","Procalcitonin","ESR","IL-6"],
+Sugar:["RBS","FBS","PPBS","HbA1c"],
+Panc:["Serum amylase","Serum lipase"],
+Thyroid:["TSH","Free T3","Free T4","T3 (total)","T4 (total)"],
+Lipid:["Total cholesterol","Triglycerides","HDL cholesterol","LDL cholesterol","VLDL cholesterol"],
+Iron:["Serum iron","TIBC","Iron saturation","Ferritin"],
+ABG:["ABG pH","pCO2","pO2","ABG HCO3","Base excess","SaO2","Lactate"],
+Cardiac:["Troponin I","Troponin T","CK-MB","CPK","NT-proBNP","LDH"],
+Urine:["Urine colour","Urine appearance","Urine pH","Urine specific gravity","Urine albumin","Urine sugar","Urine pus cells","Urine RBC","Urine epithelial cells","Urine casts","Urine crystals","Urine bacteria"],
+Stool:["Stool colour","Stool consistency","Stool mucus","Stool pus cells","Stool RBC","Stool ova/cyst","Stool occult blood"],
+Viral:["HBsAg","Anti-HCV","HIV I/II","Anti-HBs","Anti-HBc (total)","HBeAg"],
+Immuno:["ANA","ASMA","AMA","Anti-LKM","IgG","IgG4"],
+Marker:["AFP","CEA","CA 19-9","CA 125","CA 15-3","PSA","PIVKA-II","Chromogranin A","Beta-hCG"],
+Endocr:["Serum cortisol","ACTH","PTH","Insulin (fasting)","C-peptide","Calcitonin"],
+Vit:["Vitamin D (25-OH)","Vitamin B12","Folate","Zinc"],
+Ascitic:["Ascitic protein","Ascitic albumin","SAAG","Ascitic TLC","Ascitic neutrophils (PMN)","Ascitic glucose","Ascitic LDH","Ascitic ADA"],
+Drain:["Drain fluid amylase","Drain fluid lipase","Drain fluid bilirubin","Drain fluid triglycerides","Drain fluid protein","Drain fluid creatinine"]};
+var PL={CBC:"CBC",CBCx:"CBC: indices and differential",LFT:"LFT",RFT:"RFT",Minerals:"Electrolytes and minerals",Coag:"Coagulation",Inflam:"Inflammatory markers",Sugar:"Blood sugar",Panc:"Pancreatic enzymes",Thyroid:"Thyroid profile",Lipid:"Lipid profile",Iron:"Iron studies",ABG:"Arterial blood gas",Cardiac:"Cardiac markers",Urine:"Urine R/E",Stool:"Stool R/E",Viral:"Viral markers",Immuno:"Immunology",Marker:"Tumour markers",Endocr:"Endocrine",Vit:"Vitamins",Ascitic:"Ascitic fluid",Drain:"Drain fluid"},PKM={},OTS=["pre","post","hpe","img"];
+Object.keys(PR).forEach(function(k){PR[k].forEach(function(t){PKM[t]=k})});
+var SNG={'Hemoglobin (Hb)':'Hb','TC (WBC)':'TLC','Platelets':'Platelets','Total bilirubin':'T. bilirubin','Conjugated bilirubin':'D. bilirubin','Unconjugated bilirubin':'I. bilirubin','Total protein':'T. protein','Sodium (Na)':'Na','Potassium (K)':'K','Drain fluid amylase':'Amylase','Drain fluid lipase':'Lipase','Free T3':'FT3','Free T4':'FT4','T3 (total)':'T3','T4 (total)':'T4','Total cholesterol':'T. cholesterol','Triglycerides':'TG','HDL cholesterol':'HDL','LDL cholesterol':'LDL','VLDL cholesterol':'VLDL','Urine colour':'Colour','Urine appearance':'Appearance','Urine pH':'pH','Urine specific gravity':'Sp. gravity','Urine albumin':'Albumin','Urine sugar':'Sugar','Urine ketones':'Ketones','Urine bilirubin':'Bilirubin','Urine urobilinogen':'Urobilinogen','Urine pus cells':'Pus cells','Urine RBC':'RBCs','Urine epithelial cells':'Epithelial cells','Urine casts':'Casts','Urine crystals':'Crystals','Urine bacteria':'Bacteria'};
+Object.assign(SNG,{'PCV (Hct)':'PCV','RBC count':'RBC','Neutrophils':'Neut','Lymphocytes':'Lymph','Eosinophils':'Eos','Monocytes':'Mono','Basophils':'Baso','Reticulocyte count':'Retic','Peripheral smear':'Smear','Chloride (Cl)':'Cl','Bicarbonate (HCO3)':'HCO3','Serum calcium':'Ca','Ionised calcium':'iCa','Magnesium':'Mg','Phosphate':'PO4','Bleeding time':'BT','Clotting time':'CT','ABG pH':'pH','ABG HCO3':'HCO3','Base excess':'BE','Troponin I':'Trop I','Troponin T':'Trop T','Serum amylase':'Amylase','Serum lipase':'Lipase','Stool colour':'Colour','Stool consistency':'Consistency','Stool mucus':'Mucus','Stool pus cells':'Pus cells','Stool RBC':'RBCs','Stool ova/cyst':'Ova/cyst','Stool occult blood':'Occult blood','HIV I/II':'HIV','Anti-HBc (total)':'Anti-HBc','Vitamin D (25-OH)':'Vit D','Vitamin B12':'B12','Insulin (fasting)':'Insulin','Serum cortisol':'Cortisol','Ascitic protein':'Protein','Ascitic albumin':'Albumin','Ascitic TLC':'TLC','Ascitic neutrophils (PMN)':'PMN','Ascitic glucose':'Glucose','Ascitic LDH':'LDH','Ascitic ADA':'ADA','Drain fluid bilirubin':'Bilirubin','Drain fluid triglycerides':'TG','Drain fluid protein':'Protein','Drain fluid creatinine':'Creatinine'});
+var LIB={
+"Diagnosis":[["Liver",["Hepatocellular carcinoma","Liver abscess","Hydatid cyst of liver","Decompensated chronic liver disease","End-stage liver disease, for liver transplantation","Non-cirrhotic portal fibrosis (NCPF)","Extrahepatic portal vein obstruction (EHPVO)","Portal hypertension with variceal bleed","Budd-Chiari syndrome","Colorectal liver metastases","Living donor hepatectomy (donor)"]],
+["Biliary",["Cholelithiasis","Chronic calculous cholecystitis","Acute calculous cholecystitis","Choledocholithiasis","Cholangitis","Obstructive jaundice","Carcinoma gallbladder","Hilar cholangiocarcinoma","Benign biliary stricture","Choledochal cyst","Post-cholecystectomy bile duct injury","Gallbladder polyp"]],
+["Pancreas",["Acute pancreatitis","Chronic calcific pancreatitis","Walled-off pancreatic necrosis","Pancreatic pseudocyst","Carcinoma head of pancreas","Periampullary carcinoma","Pancreatic neuroendocrine tumour","Intraductal papillary mucinous neoplasm (IPMN)"]],
+["Upper GI",["Carcinoma stomach","Perforated duodenal ulcer","Gastric outlet obstruction","Upper GI bleed","Achalasia cardia","Carcinoma oesophagus","GERD with hiatus hernia","Gastrointestinal stromal tumour (GIST)"]],
+["Small bowel and colon",["Acute appendicitis","Appendicular mass","Appendicular abscess","Acute intestinal obstruction","Adhesive small bowel obstruction","Carcinoma colon","Carcinoma rectum","Sigmoid volvulus","Diverticulitis","Crohn's disease","Ulcerative colitis","Hollow viscus perforation with peritonitis","Enterocutaneous fistula"]],
+["Anorectal",["Fistula-in-ano","Haemorrhoids, grade III","Chronic anal fissure","Perianal abscess","Pilonidal sinus","Rectal prolapse"]],
+["Hernia and abdominal wall",["Right inguinal hernia","Left inguinal hernia","Bilateral inguinal hernia","Incisional hernia","Umbilical hernia","Ventral hernia","Obstructed hernia","Strangulated hernia"]],
+["Others",["Splenomegaly with hypersplenism","Blunt trauma abdomen","Intra-abdominal collection","Retroperitoneal mass","Burst abdomen"]]],
+"Co-morbidities":[["Common",["No known co-morbidities","Hypertension","Type 2 diabetes mellitus","Hypothyroidism","Coronary artery disease","Chronic kidney disease","Bronchial asthma","Chronic obstructive pulmonary disease","Treated pulmonary tuberculosis","Chronic hepatitis B infection","Chronic hepatitis C infection","Obesity","Anaemia","Epilepsy","Dyslipidaemia","Tobacco use","Alcohol use"]]],
+"Pre-operative vaccination status":[["Vaccines",["Pneumococcal vaccine given","Meningococcal vaccine given","Haemophilus influenzae type b (Hib) vaccine given","Influenza vaccine given","Hepatitis B vaccine given","Vaccination not done as surgery was an emergency","Post-splenectomy vaccination advised"]]],
+"Surgical procedure details":[["Biliary and liver",["Laparoscopic cholecystectomy","Open cholecystectomy","Laparoscopic common bile duct exploration","Open common bile duct exploration with T-tube drainage","Roux-en-Y hepaticojejunostomy","Choledochoduodenostomy","Right hepatectomy","Left lateral sectionectomy","Liver segmentectomy","Wedge resection of liver","Living donor liver transplantation","Drainage of liver abscess","ERCP with stone extraction","ERCP with stenting"]],
+["Pancreas and spleen",["Pancreaticoduodenectomy (Whipple's procedure)","Distal pancreatectomy with splenectomy","Pancreatic necrosectomy","Cystogastrostomy","Lateral pancreaticojejunostomy (Puestow)","Splenectomy","Oesophagogastric devascularisation with splenectomy (Hassab's)","Proximal splenorenal shunt","Distal splenorenal shunt"]],
+["Upper GI",["Subtotal gastrectomy","Total gastrectomy","Gastrojejunostomy","Graham's omental patch repair","Heller's myotomy with fundoplication","Transhiatal oesophagectomy","McKeown oesophagectomy","Feeding jejunostomy"]],
+["Colorectal and bowel",["Appendicectomy (laparoscopic)","Appendicectomy (open)","Exploratory laparotomy","Adhesiolysis","Small bowel resection and anastomosis","Right hemicolectomy","Left hemicolectomy","Anterior resection","Abdominoperineal resection","Hartmann's procedure","Loop ileostomy","End colostomy","Stoma closure","Peritoneal lavage and drain placement"]],
+["Anorectal",["Haemorrhoidectomy (Milligan-Morgan)","Stapled haemorrhoidopexy","Fistulotomy","Seton placement","LIFT procedure","Lateral internal sphincterotomy","Incision and drainage of perianal abscess","Excision of pilonidal sinus"]],
+["Hernia",["Open inguinal hernia mesh repair (Lichtenstein)","Laparoscopic inguinal hernia repair (TEP)","Laparoscopic inguinal hernia repair (TAPP)","Incisional hernia mesh repair","Umbilical hernia repair"]]],
+"Intraoperative complications":[["Common",["Bleeding / hemorrhage (site, estimated blood loss)","Bile duct injury","Bowel injury","Bladder / ureteric injury","Vascular injury","Splenic injury","Liver parenchymal injury","Gallbladder perforation with bile / stone spillage","Conversion to open procedure","Difficult dissection due to dense adhesions","Anaesthetic complication","Hypotension / hemodynamic instability","Cardiac arrhythmia","Equipment failure","No intraoperative complication"]]],
+"Intraoperative findings":[["Findings",["Distended gallbladder with multiple calculi","Dense adhesions in Calot's triangle","Critical view of safety achieved","Dilated common bile duct with stones","Pus in the peritoneal cavity","Bilious peritoneal contamination","Feculent peritoneal contamination","Perforation noted (site and size)","Ascites present","Nodular cirrhotic liver","Splenomegaly","Portal hypertensive collaterals","Mass noted (site and size)","No peritoneal or distant deposits","Hernia sac with omentum","Hernia sac with bowel, viable after release","Gangrenous bowel segment","Peripancreatic necrosis with collection"]]],
+"Complications":[["Complications",["No postoperative complications","Superficial surgical site infection","Seroma","Wound dehiscence","Bile leak","Postoperative pancreatic fistula (ISGPS grade A)","Postoperative pancreatic fistula (ISGPS grade B)","Postoperative pancreatic fistula (ISGPS grade C)","Post-pancreatectomy haemorrhage","Delayed gastric emptying","Intra-abdominal collection","Anastomotic leak","Postoperative ileus","Postoperative fever","Pleural effusion","Chest infection","Urinary tract infection","Deep vein thrombosis","Acute kidney injury","Post-hepatectomy liver failure","Portal vein thrombosis","Re-exploration required"]]],
+"Plan":[["Plan",["Continue antibiotics as advised","Histopathology report awaited","Review in OPD with histopathology report","Discuss in multidisciplinary tumour board","Adjuvant therapy as per oncology opinion","Suture removal on postoperative day 10 to 14","Drain removal at follow-up","Repeat imaging after 4 to 6 weeks","Staged procedure planned","Interval cholecystectomy planned","Stoma closure planned after 3 months"]]],
+"Consultations and referrals":[["Opinion taken",["Cardiology opinion taken","Pulmonology opinion taken","Nephrology opinion taken","Endocrinology opinion taken","Anaesthesia pre-anaesthetic check-up done","Medical gastroenterology opinion taken","Hepatology opinion taken","Medical oncology opinion taken","Radiotherapy opinion taken","Interventional radiology opinion taken","Physician opinion taken","Dietician advice taken","Physiotherapy advice taken","Psychiatry opinion taken","Microbiology opinion taken","Neurology opinion taken","Haematology opinion taken","Palliative care opinion taken"]]],
+"Advice at discharge":[["Medicines and activity",["Take medicines as prescribed","Avoid lifting weights above 5 kg for 6 weeks","Avoid straining","Walk daily and do deep-breathing exercises","Take adequate rest","Resume normal activities gradually","Avoid driving for 2 weeks","Use an abdominal binder for 6 weeks","Avoid painkillers other than those prescribed"]],
+["Diet",["Take a soft, light diet","Take a high-protein diet","Take a low-fat diet","Take small, frequent meals","Drink plenty of oral fluids","Take a high-fibre diet","Restrict salt to less than 2 g per day","Avoid alcohol completely","Avoid smoking and tobacco"]],
+["Anorectal care",["Sitz bath (warm water) 3 times daily and after every bowel movement","Avoid prolonged sitting on the toilet"]],
+["Others",["Stoma care as taught","Carry this discharge summary at every visit"]]],
+"Wound and drain care":[["Wound",["Keep the wound clean and dry","Dressing on alternate days","Do not apply any substance over the wound","Sutures or staples to be removed on postoperative day 10 to 14","Watch for redness, swelling or discharge from the wound"]],
+["Drain, tube and stoma",["Keep the drain bag below the level of the wound","Empty the drain bag when half full and note the daily output","T-tube care as taught; keep the bag below the level of the tube","Change the stoma bag as taught","Do not pull or kink the drain tube"]]],
+"Warning signs: return to emergency if":[["Warning signs",["Fever with chills or temperature above 100.4 °F (38 °C)","Increasing abdominal pain","Persistent vomiting","Abdominal distension","Not passing stools or gas","Yellow discolouration of eyes or skin","Pus, redness or discharge from the wound","Bleeding from the wound, drain or rectum","Black or bloody stools","Vomiting of blood","Breathlessness or chest pain","Pain or swelling of the calf","Reduced urine output","Increased drain output, or bilious or purulent drain fluid","Drowsiness or confusion","Wound gaping"]]],
+"Condition at discharge":[["Condition",["Stable","Afebrile and haemodynamically stable","Tolerating oral diet","Passing stools and flatus","Ambulatory","Wound healthy","Drain removed","Discharged with drain in situ","Discharged with T-tube in situ","Discharged with stoma functioning"]]],
+"Follow-up date and instructions":[["Follow-up",["Review in surgical OPD after 1 week with reports","Review in surgical OPD after 2 weeks with histopathology report","Review in surgical OPD after 4 to 6 weeks","Suture removal on postoperative day 10 to 14","Repeat LFT and USG abdomen before review","Come earlier if any warning sign develops","Carry this discharge summary and all reports at every visit"]]]};
+var SGT={"Blood group":{flat:1,learn:0,b:[["A+","Rh positive"],["A-","Rh negative"],["B+","Rh positive"],["B-","Rh negative"],["AB+","Rh positive"],["AB-","Rh negative"],["O+","Rh positive"],["O-","Rh negative"]]},
+"PS (ECOG)":{flat:1,learn:0,b:[["0","Fully active"],["1","Restricted in strenuous activity"],["2","Ambulatory, capable of self-care"],["3","Limited self-care"],["4","Completely disabled"]]},
+"Designation of resident":{flat:1,learn:1,b:[["Senior Resident",""],["Junior Resident",""],["Postgraduate Trainee (PGT)",""],["Resident Medical Officer",""],["Registrar",""],["Assistant Professor",""],["Associate Professor",""],["Professor",""]]},
+"Consultant":{flat:1,learn:1,b:[]},"C/O":{flat:1,learn:1,b:[]},"Prepared by (Resident)":{flat:1,learn:1,b:[]},"Verified by (Consultant)":{flat:1,learn:1,b:[]},"Emergency contact number":{flat:1,learn:1,b:[]}};
+var DRUGS=[
+["Pantoprazole 40 mg","Tab","Acid suppression"],["Rabeprazole 20 mg","Tab","Acid suppression"],["Esomeprazole 40 mg","Tab","Acid suppression"],["Antacid suspension (aluminium + magnesium hydroxide)","Suspension","Acid suppression"],["Sucralfate suspension","Suspension","Acid suppression"],
+["Paracetamol 500 mg","Tab","Pain and fever"],["Paracetamol 650 mg","Tab","Pain and fever"],["Tramadol 50 mg","Cap","Pain and fever"],["Tramadol 37.5 mg + Paracetamol 325 mg","Tab","Pain and fever"],["Aceclofenac 100 mg + Paracetamol 325 mg","Tab","Pain and fever"],["Diclofenac 50 mg","Tab","Pain and fever"],["Ibuprofen 400 mg","Tab","Pain and fever"],
+["Ondansetron 4 mg","Tab","Nausea and vomiting"],["Domperidone 10 mg","Tab","Nausea and vomiting"],["Metoclopramide 10 mg","Tab","Nausea and vomiting"],
+["Amoxicillin 500 mg + Clavulanic acid 125 mg","Tab","Antibiotics"],["Cefixime 200 mg","Tab","Antibiotics"],["Cefpodoxime 200 mg","Tab","Antibiotics"],["Cefuroxime 500 mg","Tab","Antibiotics"],["Ciprofloxacin 500 mg","Tab","Antibiotics"],["Levofloxacin 500 mg","Tab","Antibiotics"],["Ofloxacin 200 mg + Ornidazole 500 mg","Tab","Antibiotics"],["Metronidazole 400 mg","Tab","Antibiotics"],["Ornidazole 500 mg","Tab","Antibiotics"],["Doxycycline 100 mg","Cap","Antibiotics"],["Azithromycin 500 mg","Tab","Antibiotics"],["Cotrimoxazole DS","Tab","Antibiotics"],
+["Lactulose solution","Syrup","Bowel and gut"],["Ispaghula husk (Isabgol)","Powder","Bowel and gut"],["Polyethylene glycol","Powder","Bowel and gut"],["Bisacodyl 5 mg","Tab","Bowel and gut"],["Drotaverine 40 mg","Tab","Bowel and gut"],["Dicyclomine 20 mg","Tab","Bowel and gut"],["Mebeverine 135 mg","Tab","Bowel and gut"],["Simethicone drops","Drops","Bowel and gut"],["Oral rehydration salts (ORS)","Sachet","Bowel and gut"],
+["Ursodeoxycholic acid 300 mg","Tab","Liver and pancreas"],["Rifaximin 550 mg","Tab","Liver and pancreas"],["L-ornithine L-aspartate","Sachet","Liver and pancreas"],["Spironolactone 50 mg","Tab","Liver and pancreas"],["Furosemide 40 mg","Tab","Liver and pancreas"],["Propranolol 20 mg","Tab","Liver and pancreas"],["Carvedilol 6.25 mg","Tab","Liver and pancreas"],["Pancreatic enzyme (pancrelipase) capsules","Cap","Liver and pancreas"],["Silymarin","Tab","Liver and pancreas"],
+["Lignocaine 2% gel","Gel","Topical and anorectal"],["Diltiazem 2% ointment","Ointment","Topical and anorectal"],["Glyceryl trinitrate 0.2% ointment","Ointment","Topical and anorectal"],["Mupirocin 2% ointment","Ointment","Topical and anorectal"],["Povidone-iodine 5% ointment","Ointment","Topical and anorectal"],["Silver sulfadiazine 1% cream","Cream","Topical and anorectal"],["Hydrocortisone cream","Cream","Topical and anorectal"],["Chlorhexidine 0.2% mouthwash","Mouthwash","Topical and anorectal"],
+["Multivitamin and multimineral","Tab","Nutrition"],["Vitamin C 500 mg","Tab","Nutrition"],["Zinc 50 mg","Tab","Nutrition"],["Calcium + Vitamin D3","Tab","Nutrition"],["Iron + folic acid","Tab","Nutrition"],["Vitamin B12 (methylcobalamin) 1500 mcg","Tab","Nutrition"],["Cholecalciferol 60,000 IU","Sachet","Nutrition"],["Protein supplement","Powder","Nutrition"],
+["Enoxaparin 40 mg","Injection","Injectables"],
+["Metformin 500 mg","Tab","Regular medicines"],["Amlodipine 5 mg","Tab","Regular medicines"],["Telmisartan 40 mg","Tab","Regular medicines"],["Atorvastatin 10 mg","Tab","Regular medicines"],["Levothyroxine 50 mcg","Tab","Regular medicines"]];
+
+var DT=["2D Echo","Fibroscan liver","Endoscopy","Culture and sensitivity","CT","USG","MRI or other imaging","MRCP"];
+var OTG=[["Cardiopulmonary",["ECG","2D Echo","Stress test (TMT)","Pulmonary function test"]],
+["Endoscopy and GI procedures",["Upper GI endoscopy","Colonoscopy","Proctoscopy / sigmoidoscopy","ERCP","Fibroscan liver","HVPG","Anorectal manometry","Capsule endoscopy"]],
+["Microbiology",["Culture and sensitivity","Blood culture","Urine culture and sensitivity","Pus culture and sensitivity","Wound swab culture","Bile culture","Ascitic fluid culture","Drain fluid culture","Sputum culture","Stool culture","Catheter tip culture","Fungal culture","AFB smear / GeneXpert","Mantoux (TST)"]],
+["Serology and PCR",["Viral markers","COVID-19 RT-PCR","Dengue NS1 / IgM","Malaria antigen","Widal test","Scrub typhus IgM"]],
+["Fluid analysis and cytology",["Ascitic fluid analysis","Pleural fluid analysis","Ascitic fluid cytology","Bile cytology","FNAC / cytology"]],
+["Other",["DEXA scan","Nutritional assessment","Anaesthetic fitness (PAC)"]]],
+OTQ={pre:OTG,post:OTG,
+img:[["X-ray and contrast studies",["X-ray","Chest X-ray","X-ray abdomen (erect)","Barium swallow","Barium meal","Barium enema","Gastrografin study","Fistulogram","Sinogram","Cholangiogram","IVU"]],
+["Ultrasound",["USG","USG abdomen and pelvis","USG neck","Doppler","Portal Doppler","Endoanal USG","EUS"]],
+["CT",["CT","CT abdomen and pelvis","CECT abdomen","CT triphasic liver","CT angiography","CT chest","HRCT chest"]],
+["MRI",["MRI","MRCP","MRI pelvis","MR fistulogram","MR enterography","MRI liver"]],
+["Nuclear medicine",["PET-CT","HIDA scan","Bone scan","DOTATATE PET-CT"]]],
+hpe:[["Biopsy",["Biopsy","Endoscopic biopsy","Liver biopsy","Colonic / rectal biopsy","Lymph node biopsy","Peritoneal biopsy","Skin / soft tissue biopsy"]],
+["Specimens",["Specimen histopathology","Gallbladder specimen","Appendix specimen","Resected bowel specimen","Hernia sac","Fistula tract","Lymph node specimen"]],
+["Cytology and special tests",["FNAC / cytology","Frozen section","Immunohistochemistry (IHC)","Special stains"]]]},
+OTL={pre:"Add investigation",post:"Add investigation",img:"Add imaging",hpe:"Add histopathology"};
+/* ===== extra suggestions (merged without duplicates) ===== */
+(function(){
+ function mergeGroups(arr,groups){var have={};arr.forEach(function(g){g[1].forEach(function(x){have[x.toLowerCase()]=1})});
+  groups.forEach(function(ng){var g=null;arr.forEach(function(q){if(q[0].toLowerCase()==ng[0].toLowerCase())g=q});if(!g){g=[ng[0],[]];arr.push(g)}
+   ng[1].forEach(function(x){if(!have[x.toLowerCase()]){have[x.toLowerCase()]=1;g[1].push(x)}})})}
+ var X={
+ "Diagnosis":[["Liver",["Hepatic hemangioma","Focal nodular hyperplasia","Hepatic adenoma","Polycystic liver disease","Acute liver failure","Alcoholic liver disease","NASH / MASLD cirrhosis","Autoimmune hepatitis","Primary biliary cholangitis","Primary sclerosing cholangitis","Hepatorenal syndrome","Refractory ascites","Hepatic encephalopathy","Hepatoblastoma","Hepatic hydatid cyst with biliary communication","Post-transplant biliary stricture","Post-transplant hepatic artery thrombosis"]],
+  ["Biliary",["Mirizzi syndrome","Gallbladder empyema","Gangrenous cholecystitis","Gallstone pancreatitis","Gallstone ileus","Xanthogranulomatous cholecystitis","Gallbladder perforation","Cholangiocarcinoma (intrahepatic)","Distal cholangiocarcinoma","Biliary stricture post-cholecystectomy","Cholecystitis with CBD stones","Choledochal cyst (Todani type)","Recurrent pyogenic cholangitis","Biliary leak"]],
+  ["Pancreas",["Pancreatic neuroendocrine tumour","Intraductal papillary mucinous neoplasm (IPMN)","Mucinous cystic neoplasm of pancreas","Solid pseudopapillary neoplasm","Infected pancreatic necrosis","Groove pancreatitis","Autoimmune pancreatitis","Pancreatic pseudocyst with infection","Pancreatic ascites","Hereditary pancreatitis","Pancreas divisum"]],
+  ["Upper GI",["Carcinoma stomach","Gastric outlet obstruction","Perforated duodenal ulcer","Perforated gastric ulcer","Bleeding peptic ulcer","Carcinoma oesophagus","Achalasia cardia","Corrosive stricture of oesophagus","Hiatus hernia","GERD","Gastrointestinal stromal tumour (GIST)","Caustic ingestion","Upper GI bleed","Variceal bleed"]],
+  ["Small bowel and colon",["Acute appendicitis","Appendicular abscess","Appendicular mass","Perforated appendicitis","Small bowel obstruction","Adhesive intestinal obstruction","Ileal perforation (typhoid)","Tubercular stricture of ileum","Crohn's disease","Ulcerative colitis","Carcinoma caecum / ascending colon","Carcinoma sigmoid colon","Carcinoma rectum","Sigmoid volvulus","Diverticular disease with perforation","Large bowel obstruction","Mesenteric ischaemia","Intussusception","Enterocutaneous fistula","Short bowel syndrome","Lower GI bleed"]],
+  ["Anorectal",["Fissure in ano (chronic)","Fistula in ano (high)","Fistula in ano (low)","Recurrent fistula in ano","Perianal abscess","Ischiorectal abscess","Haemorrhoids grade III","Haemorrhoids grade IV","Rectal prolapse","Pilonidal sinus","Anal carcinoma","Anal stricture"]],
+  ["Hernia and abdominal wall",["Right inguinal hernia","Left inguinal hernia","Bilateral inguinal hernia","Recurrent inguinal hernia","Obstructed inguinal hernia","Strangulated inguinal hernia","Femoral hernia","Umbilical hernia","Paraumbilical hernia","Epigastric hernia","Incisional hernia","Parastomal hernia","Spigelian hernia","Obstructed incisional hernia","Burst abdomen"]],
+  ["Spleen, portal hypertension and others",["Hypersplenism","Splenic abscess","Splenic injury","Splenic artery aneurysm","Idiopathic thrombocytopenic purpura (ITP)","Hepatic hydatid disease","Blunt trauma abdomen","Penetrating injury abdomen","Peritonitis","Intra-abdominal abscess","Retroperitoneal tumour","Soft tissue sarcoma","Neuroendocrine tumour","Thyroid nodule","Carcinoma breast","Goitre"]]],
+ "Co-morbidities":[["Common",["Type 2 diabetes mellitus","Type 1 diabetes mellitus","Hypertension","Hypothyroidism","Hyperthyroidism","Coronary artery disease","Chronic kidney disease","Chronic obstructive pulmonary disease","Bronchial asthma","Pulmonary tuberculosis (treated)","Epilepsy","Obesity","Anaemia","Chronic liver disease","Hepatitis B carrier","Hepatitis C infection","HIV infection","Atrial fibrillation","Heart failure","Valvular heart disease","Stroke (past)","Dyslipidaemia","Benign prostatic hyperplasia","Rheumatoid arthritis","Bleeding disorder","On anticoagulant therapy","On antiplatelet therapy","Smoker","Alcohol use","Tobacco chewing","Previous abdominal surgery","Previous LSCS","Allergy (drug)","Pregnancy","None"]]],
+ "Complications":[["Common",["Surgical site infection (superficial)","Surgical site infection (deep / organ space)","Wound dehiscence","Seroma","Haematoma","Postoperative bile leak","Postoperative pancreatic fistula (POPF)","Anastomotic leak","Intra-abdominal collection / abscess","Postoperative ileus","Delayed gastric emptying","Postoperative bleeding","Post-hepatectomy liver failure","Hepatic artery thrombosis","Portal vein thrombosis","Chyle leak","Pleural effusion","Pneumonia","Acute kidney injury","Urinary tract infection","Urinary retention","Deep vein thrombosis","Pulmonary embolism","Fever","Sepsis","Incisional hernia","Stoma complication (retraction / necrosis)","Enterocutaneous fistula","Incontinence (flatus / stool)","Recurrence","Reoperation required","No postoperative complication"]]],
+ "Plan":[["Common",["Review in surgical OPD with reports","Suture removal on postoperative day 10","Suture removal on postoperative day 14","Review with histopathology report","Review with repeat ultrasound abdomen","Repeat liver function tests after 1 week","Repeat CBC and RFT after 1 week","Further management as per histopathology","Adjuvant chemotherapy to be discussed in tumour board","Oncology referral","Staged procedure planned","Interval cholecystectomy after 6 weeks","Stoma closure after 3 months","Endoscopic follow-up after 3 months","Continue anti-tubercular treatment as advised","Diabetic and blood pressure control with physician","Drain removal in OPD","Dressing change on alternate days"]]],
+ "Intraoperative complications":[["Common",["Hepatic artery injury","Portal vein injury","Cystic artery bleeding","Cystic duct stump leak","Ureteric injury","Stapler malfunction","Bowel serosal tear (repaired)","Diaphragm injury","Pneumothorax","Air embolism","Massive blood loss requiring transfusion","Difficult airway","Hypothermia","Anaphylaxis","Port-site bleeding","Trocar injury"]]],
+ "Intraoperative findings":[["Findings",["Contracted gallbladder with thickened wall","Empyema gallbladder","Mucocele of gallbladder","Gallbladder gangrene","Mirizzi syndrome","Adhesions to omentum and duodenum","Frozen Calot's triangle","Inflamed appendix","Perforated appendix with pus","Retrocaecal appendix","Normal appendix","Free bile in peritoneal cavity","Purulent peritoneal fluid","Haemoperitoneum","Peritoneal deposits","Omental caking","Liver cirrhotic","Fatty liver","Liver nodule (segment and size)","Hydatid cyst (site and size)","Dilated bile duct with sludge","Pancreatic head mass","Peripancreatic necrosis","Enlarged lymph nodes","Bowel gangrene","Band adhesion causing obstruction","Transition point identified","Sigmoid volvulus with viable bowel","Tumour (site and size)","Tumour invading adjacent organ","Complete fistula tract with internal opening","High trans-sphincteric tract","Internal opening at 6 o'clock","Haemorrhoidal cushions at 3, 7, 11 o'clock","Direct inguinal hernia defect","Indirect inguinal hernia sac","Large defect with loss of domain","Adherent bowel in sac","Blood loss (estimated)","Drain placed"]]],
+ "Consultations and referrals":[["Referral",["Gastroenterology","Hepatology","Medical oncology","Radiation oncology","Pulmonary medicine","Cardiology","Nephrology","Endocrinology","Neurology","Psychiatry","Dietician","Physiotherapy","Palliative care","Infectious disease","Radiology (interventional)","Anaesthesia pain clinic","Urology","Gynaecology","Haematology","ENT","Ophthalmology","Dermatology"]]],
+ "Advice at discharge":[["Advice",["Light, easily digestible diet","Low-fat diet","High-protein diet","Avoid alcohol and tobacco","Avoid lifting heavy weight for 6 weeks","Avoid straining","High-fibre diet and plenty of fluids","Walk daily","Deep breathing exercises and incentive spirometry","Sitz bath twice daily and after each bowel movement","Keep wound clean and dry","Do not remove dressing until review","Take medicines regularly as prescribed","Monitor blood sugar regularly","Monitor blood pressure regularly","Sodium restriction (2 g/day)","Fluid restriction as advised","Avoid driving for 2 weeks","Wear abdominal binder for 6 weeks","Avoid NSAIDs","Do not stop immunosuppression","Carry this summary and reports on every visit"]]],
+ "Wound and drain care":[["Care",["Daily dressing with povidone-iodine","Alternate-day dressing","Keep wound dry; avoid wetting","Record drain output daily","Flush drain as instructed","Empty drain bag when half full","Stoma care as taught","Report if drain output becomes bilious or purulent","Suture removal on day 10","Staple removal on day 10","Keep abdominal binder in place","Report any wound discharge or redness"]]],
+ "Warning signs: return to emergency if":[["Warning signs",["Fever above 100.4 °F (38 °C) or chills","Persistent vomiting","Severe or worsening abdominal pain","Abdominal distension","Not passing stool or gas","Yellowing of eyes or skin","Wound redness, swelling or discharge","Bleeding from wound, drain or stool","Black tarry stools","Fresh bleeding per rectum","Breathlessness or chest pain","Leg swelling or pain","Reduced urine output","Drain output suddenly increases or changes colour","Confusion or drowsiness","Wound gaping"]]],
+ "Condition at discharge":[["Condition",["Stable, afebrile, tolerating oral diet","Haemodynamically stable","Ambulatory and independent","Passing flatus and stool","Wound healthy","Drain in situ, minimal output","Stoma functioning","Pain controlled on oral medications","Discharged on request","Discharged against medical advice (LAMA)","Referred to higher centre","Patient expired"]]],
+ "Follow-up date and instructions":[["Follow-up",["Review in surgical OPD after 1 week with reports","Review after 2 weeks","Review after 1 month","Review after 3 months","Review after 6 months","Review earlier if symptoms worsen","Bring histopathology report on review","Bring all previous reports and this summary","Review in OPD on next unit day"]]],
+ "Pre-operative vaccination status":[["Vaccines",["Hepatitis B vaccine","Hepatitis A vaccine","Pneumococcal vaccine","Meningococcal vaccine","Haemophilus influenzae type b vaccine","Influenza vaccine","COVID-19 vaccine","Tetanus toxoid","Typhoid vaccine","Not vaccinated","Vaccination record not available"]]],
+ "Surgical procedure details":[
+  ["Biliary and liver",["Laparoscopic cholecystectomy converted to open","Subtotal cholecystectomy","Laparoscopic subtotal cholecystectomy","Cholecystostomy (tube)","Hepaticojejunostomy (Roux-en-Y) for biliary stricture","Excision of choledochal cyst with hepaticojejunostomy","Cholecystojejunostomy","Biliary-enteric anastomosis revision","Left hepatectomy","Extended right hepatectomy","Central hepatectomy","Segmentectomy (liver)","Non-anatomical liver resection","Hydatid cyst: deroofing and omentoplasty","Hydatid cyst: PAIR","Radiofrequency / microwave ablation of liver lesion","Percutaneous transhepatic biliary drainage (PTBD)","Biliary stenting (percutaneous)","Deceased donor liver transplantation","Right lobe donor hepatectomy","Left lateral segment donor hepatectomy","Back-table graft preparation","Liver transplant biliary reconstruction","Hepatic artery reconstruction","Mesocaval shunt","Meso-Rex shunt","TIPS","Endoscopic variceal band ligation","Endoscopic sclerotherapy","Liver biopsy (open / laparoscopic)"]],
+  ["Pancreas and spleen",["Pylorus-preserving pancreaticoduodenectomy","Total pancreatectomy","Spleen-preserving distal pancreatectomy","Enucleation of pancreatic tumour","Central pancreatectomy","Frey's procedure","Beger procedure","Pancreatic duct stenting (ERCP)","Percutaneous catheter drainage of pancreatic collection","Endoscopic transmural drainage of pancreatic collection","Video-assisted retroperitoneal debridement (VARD)","Laparoscopic splenectomy","Splenorrhaphy","Partial splenectomy"]],
+  ["Upper GI and bariatric",["Laparoscopic Nissen fundoplication","Laparoscopic hiatus hernia repair","Truncal vagotomy and gastrojejunostomy","Pyloroplasty","Laparoscopic gastrojejunostomy","Gastrostomy","Laparoscopic feeding jejunostomy","Oesophageal dilatation","Oesophageal stenting","Upper GI endoscopy with banding / injection","Laparoscopic sleeve gastrectomy","Laparoscopic Roux-en-Y gastric bypass","D2 gastrectomy","Wedge resection of stomach (GIST)","Laparoscopic Graham's patch repair","Oesophagectomy with gastric pull-up (three-field)"]],
+  ["Small bowel and colorectal",["Ileocaecal resection","Subtotal colectomy","Total proctocolectomy with ileal pouch","Laparoscopic right hemicolectomy","Laparoscopic anterior resection","Low anterior resection with defunctioning ileostomy","Ultralow anterior resection","Reversal of Hartmann's procedure","Ileal perforation repair (primary closure)","Resection of ileal stricture","Strictureplasty","Laparoscopic adhesiolysis","Ileostomy closure","Colostomy closure","Sigmoid colectomy","Sigmoidopexy / sigmoid resection for volvulus","Rectopexy (laparoscopic ventral)","Delorme's procedure","Altemeier's procedure","Diagnostic laparoscopy","Laparoscopic appendicectomy converted to open","Drainage of appendicular abscess","Colonoscopic polypectomy","Colonoscopic decompression"]],
+  ["Anorectal",["Fissurectomy","Fistulectomy","Fistulotomy with marsupialisation","Fistula plug / glue","Advancement flap","VAAFT","Laser fistula closure (FiLaC)","Ligation of intersphincteric fistula tract (LIFT)","Rubber band ligation of haemorrhoids","Haemorrhoidal artery ligation (HAL / THD)","Laser haemorrhoidoplasty","Anal sphincter repair","Examination under anaesthesia","Excision of anal tag / polyp","Wide local excision of anal lesion","Pilonidal sinus: Limberg flap","Pilonidal sinus: laying open"]],
+  ["Hernia and abdominal wall",["Laparoscopic ventral hernia repair (IPOM)","Open ventral hernia repair (sublay)","Rives-Stoppa repair","Component separation","Enhanced-view TEP (eTEP) ventral repair","Femoral hernia repair","Epigastric hernia repair","Paraumbilical hernia mesh repair","Parastomal hernia repair","Re-laparotomy","Abdominal wall closure (delayed)","Negative-pressure wound therapy","Secondary suturing of burst abdomen","Laparostomy / open abdomen management"]],
+  ["General surgery and others",["Total thyroidectomy","Hemithyroidectomy","Modified radical mastectomy","Wide local excision","Lumpectomy","Excision biopsy","Incision and drainage of abscess","Wound debridement","Split-thickness skin graft","Fasciotomy","Tracheostomy","Central venous catheter insertion","Intercostal drainage (chest tube)","Percutaneous drainage (image-guided)","Paracentesis (diagnostic / therapeutic)","Pleural tapping","Feeding tube insertion","Retroperitoneal tumour excision","Lymph node dissection","Splenectomy for trauma","Damage-control laparotomy","Perforation closure (primary repair)","Emergency laparotomy","Laparoscopic exploration"]]],
+ "pre":[["Cardiopulmonary",["Holter monitoring","Carotid Doppler","Arterial Doppler lower limb"]],["Endoscopy and GI procedures",["Enteroscopy","Endoscopic ultrasound with FNA","Oesophageal manometry","24-hour pH study","Cholangioscopy","Endoscopic biopsy (stomach / duodenum)","Barium follow-through"]],["Microbiology",["Blood culture (aerobic and anaerobic)","Urine routine and culture","Bile aspirate culture","Peritoneal fluid culture","HIV, HBsAg, HCV screening","Hepatitis A IgM","Hepatitis E IgM","CMV serology","CMV PCR","EBV serology","Procalcitonin"]],["Others",["Echinococcus serology (IHA / ELISA)","Pancreatic cyst fluid analysis (CEA, amylase)","Ascitic fluid ADA","Ascitic fluid cytology","Genetic testing","Frailty assessment","Anaesthesia fitness (PAC)","Nutritional risk screening (NRS 2002)"]]],
+ "img":[["X-ray and contrast studies",["X-ray KUB","X-ray cervical / thoracic / lumbar spine","Chest X-ray PA view","Contrast fistulogram","T-tube cholangiogram","Defecography","Barium enema (double contrast)","Small bowel enema","Water-soluble contrast study"]],["Ultrasound",["USG whole abdomen","USG liver and portal system","USG scrotum","USG breast","USG thyroid","USG chest (pleural)","Contrast-enhanced ultrasound (CEUS)","Elastography","Transrectal USG","Doppler liver transplant (hepatic artery / portal vein)"]],["CT",["CECT chest and abdomen","CT pancreas protocol","CT liver volumetry","CT enterography","CT colonography","CT urography","CT KUB","CT perfusion","CT-guided biopsy / drainage","CT portography","CT brain"]],["MRI",["MRI abdomen with MRCP","MRI liver with Primovist (gadoxetate)","MRI pancreas","MRI rectum (staging)","MRI brain","MRI spine","MR cholangiography with secretin","MR angiography"]],["Nuclear medicine",["PET-CT whole body (FDG)","PSMA PET-CT","HIDA scan with ejection fraction","Gastric emptying scan","99mTc sulphur colloid liver-spleen scan","Octreotide scan","Radionuclide renal scan (DTPA / DMSA)","Meckel's scan","Tagged RBC scan (GI bleed)"]],["Angiography and interventional",["CT angiography (mesenteric)","Digital subtraction angiography (DSA)","Hepatic angiography","Transarterial chemoembolisation (TACE)","Portal vein embolisation","Splenic artery embolisation","Venography"]]],
+ "hpe":[["Specimens",["Liver wedge biopsy","Liver explant (transplant)","Liver resection specimen","Pancreatic specimen (Whipple)","Distal pancreatectomy specimen","Gastrectomy specimen","Oesophagectomy specimen","Colectomy specimen","Rectal specimen","Small bowel resection specimen","Gallbladder with cystic lymph node","Omental biopsy","Anal canal / fistula tract specimen","Haemorrhoid specimen","Pilonidal sinus specimen","Thyroid specimen","Breast specimen","Soft tissue tumour specimen","Splenic specimen","Hydatid cyst wall","Peritoneal fluid cytology","Bile cytology","Brush cytology"]],["Special tests",["Margin status","Lymph node status","Perineural / lymphovascular invasion","Tumour grade and stage (TNM)","Immunohistochemistry panel","Microsatellite instability (MSI / MMR) testing","KRAS / NRAS / BRAF mutation","HER2 testing","Ki-67 index","Molecular testing"]]]
+ };
+ var A=X;
+ ["Diagnosis","Co-morbidities","Complications","Plan","Intraoperative complications","Intraoperative findings","Consultations and referrals","Advice at discharge","Wound and drain care","Warning signs: return to emergency if","Condition at discharge","Follow-up date and instructions","Pre-operative vaccination status","Surgical procedure details"].forEach(function(k){if(!LIB[k])LIB[k]=[];mergeGroups(LIB[k],A[k])});
+ mergeGroups(OTQ.pre,A.pre);mergeGroups(OTQ.img,A.img);mergeGroups(OTQ.hpe,A.hpe);
+
+ var D=[["Metronidazole 400 mg","Tab","Antibiotics"],["Ornidazole 500 mg","Tab","Antibiotics"],["Linezolid 600 mg","Tab","Antibiotics"],["Doxycycline 100 mg","Cap","Antibiotics"],["Azithromycin 500 mg","Tab","Antibiotics"],["Cefadroxil 500 mg","Tab","Antibiotics"],["Nitrofurantoin 100 mg","Cap","Antibiotics"],["Fluconazole 150 mg","Tab","Antibiotics"],["Albendazole 400 mg","Tab","Antibiotics"],["Praziquantel 600 mg","Tab","Antibiotics"],
+ ["Lactulose solution","Syrup","Bowel care"],["Isabgol (psyllium husk)","Powder","Bowel care"],["Bisacodyl 5 mg","Tab","Bowel care"],["Polyethylene glycol (PEG) 3350","Sachet","Bowel care"],["Liquid paraffin","Syrup","Bowel care"],["Ispaghula + senna","Powder","Bowel care"],["Loperamide 2 mg","Cap","Bowel care"],["ORS","Sachet","Bowel care"],
+ ["Ursodeoxycholic acid 300 mg","Tab","Liver and biliary"],["Ursodeoxycholic acid 600 mg","Tab","Liver and biliary"],["Rifaximin 550 mg","Tab","Liver and biliary"],["L-ornithine L-aspartate","Sachet","Liver and biliary"],["Silymarin 140 mg","Tab","Liver and biliary"],["Spironolactone 50 mg","Tab","Liver and biliary"],["Furosemide 40 mg","Tab","Liver and biliary"],["Propranolol 20 mg","Tab","Liver and biliary"],["Carvedilol 3.125 mg","Tab","Liver and biliary"],["Entecavir 0.5 mg","Tab","Liver and biliary"],["Tenofovir 300 mg","Tab","Liver and biliary"],["Tacrolimus 1 mg","Cap","Transplant"],["Mycophenolate mofetil 500 mg","Tab","Transplant"],["Prednisolone 10 mg","Tab","Transplant"],["Prednisolone 5 mg","Tab","Transplant"],["Everolimus 0.5 mg","Tab","Transplant"],["Valganciclovir 450 mg","Tab","Transplant"],["Cotrimoxazole 480 mg (prophylaxis)","Tab","Transplant"],
+ ["Pancreatin (lipase 10000 U)","Cap","Pancreas"],["Pancreatin (lipase 25000 U)","Cap","Pancreas"],["Octreotide","Injection","Pancreas"],
+ ["Pregabalin 75 mg","Cap","Pain and fever"],["Gabapentin 300 mg","Cap","Pain and fever"],["Etoricoxib 60 mg","Tab","Pain and fever"],["Naproxen 250 mg","Tab","Pain and fever"],["Nimesulide 100 mg","Tab","Pain and fever"],["Tapentadol 50 mg","Tab","Pain and fever"],["Paracetamol 1 g","Injection","Pain and fever"],
+ ["Itopride 150 mg","Tab","Acid suppression"],["Levosulpiride 75 mg","Tab","Acid suppression"],["Dicyclomine 20 mg","Tab","Acid suppression"],["Drotaverine 40 mg","Tab","Acid suppression"],["Hyoscine butylbromide 10 mg","Tab","Acid suppression"],["Simethicone drops","Drops","Acid suppression"],["Famotidine 20 mg","Tab","Acid suppression"],["Ranitidine 150 mg","Tab","Acid suppression"],["Domperidone suspension","Suspension","Nausea and vomiting"],
+ ["Enoxaparin 40 mg","Injection","Anticoagulation"],["Rivaroxaban 10 mg","Tab","Anticoagulation"],["Apixaban 5 mg","Tab","Anticoagulation"],["Warfarin 5 mg","Tab","Anticoagulation"],["Aspirin 75 mg","Tab","Anticoagulation"],["Clopidogrel 75 mg","Tab","Anticoagulation"],["Tranexamic acid 500 mg","Tab","Anticoagulation"],
+ ["Metformin 500 mg","Tab","Diabetes and BP"],["Glimepiride 1 mg","Tab","Diabetes and BP"],["Vildagliptin 50 mg","Tab","Diabetes and BP"],["Insulin (regular)","Injection","Diabetes and BP"],["Insulin glargine","Injection","Diabetes and BP"],["Amlodipine 5 mg","Tab","Diabetes and BP"],["Telmisartan 40 mg","Tab","Diabetes and BP"],["Atenolol 50 mg","Tab","Diabetes and BP"],["Levothyroxine 50 mcg","Tab","Diabetes and BP"],["Atorvastatin 20 mg","Tab","Diabetes and BP"],
+ ["Diltiazem 2% ointment","Ointment","Anorectal"],["Glyceryl trinitrate 0.2% ointment","Ointment","Anorectal"],["Lignocaine 2% gel","Gel","Anorectal"],["Cinchocaine + hydrocortisone ointment","Ointment","Anorectal"],["Diosmin + hesperidin 500 mg","Tab","Anorectal"],["Sitz bath with povidone-iodine","Lotion","Anorectal"],["Metronidazole + lignocaine gel","Gel","Anorectal"],["Nifedipine 0.3% + lignocaine 1.5% ointment","Ointment","Anorectal"],
+ ["Calcium + vitamin D3","Tab","Supplements"],["Multivitamin","Cap","Supplements"],["Ferrous ascorbate + folic acid","Tab","Supplements"],["Vitamin B12 (methylcobalamin) 1500 mcg","Tab","Supplements"],["Vitamin D3 60000 IU","Sachet","Supplements"],["Protein supplement","Powder","Supplements"],["Zinc 20 mg","Tab","Supplements"],["Folic acid 5 mg","Tab","Supplements"],["Vitamin K (phytomenadione) 10 mg","Injection","Supplements"],
+ ["Povidone-iodine 5% ointment","Ointment","Wound and skin"],["Silver sulfadiazine 1% cream","Cream","Wound and skin"],["Mupirocin 2% ointment","Ointment","Wound and skin"],["Framycetin cream","Cream","Wound and skin"],["Chlorhexidine mouthwash","Mouthwash","Wound and skin"],["Povidone-iodine gargle","Mouthwash","Wound and skin"],["Collagenase ointment","Ointment","Wound and skin"],["Silicone gel (scar)","Gel","Wound and skin"],["Emollient (liquid paraffin + white soft paraffin)","Cream","Wound and skin"],
+ ["Salbutamol inhaler","Inhaler","Respiratory"],["Budesonide + formoterol inhaler","Inhaler","Respiratory"],["Glycerin suppository","Suppository","Bowel care"],["Soap-water enema","Enema","Bowel care"],["Acetylcysteine 600 mg","Tab","Respiratory"],["Ambroxol syrup","Syrup","Respiratory"],["Levocetirizine 5 mg","Tab","Respiratory"],["Montelukast 10 mg","Tab","Respiratory"]];
+ var hv={};DRUGS.forEach(function(d){hv[d[0].toLowerCase()]=1});D.forEach(function(d){if(!hv[d[0].toLowerCase()]){hv[d[0].toLowerCase()]=1;DRUGS.push(d)}});
+ /* more lab tests */
+ var T={Thyroid:{"Anti-TPO":["IU/mL"],"Thyroglobulin":["ng/mL"],"TSH receptor antibody":["IU/L"]},
+  Viral:{"Anti-HAV IgM":[""],"Anti-HEV IgM":[""],"Anti-HBe":[""],"HBV DNA (quantitative)":["IU/mL"],"CMV IgM":[""],"CMV IgG":[""],"EBV VCA IgM":[""]},
+  Immuno:{"IgM":["mg/dL","g/L"],"IgA":["mg/dL","g/L"],"Anti-dsDNA":["IU/mL"],"Anti-smooth muscle Ab (titre)":[""]},
+  Marker:{"CA 72-4":["U/mL"],"NSE":["ng/mL"],"Beta-2 microglobulin":["mg/L"],"Alpha-fetoprotein L3 %":["%"],"Gastrin":["pg/mL"],"Glucagon":["pg/mL"]},
+  Endocr:{"Prolactin":["ng/mL"],"LH":["mIU/mL"],"FSH":["mIU/mL"],"Testosterone":["ng/dL","nmol/L"],"Aldosterone":["ng/dL"],"Plasma renin activity":["ng/mL/h"],"Urine metanephrines (24 h)":["µg/24 h"],"Plasma metanephrines":["pg/mL"],"Serum IGF-1":["ng/mL"]},
+  Vit:{"Vitamin A":["µg/dL"],"Vitamin E":["mg/L"],"Vitamin K":["ng/mL"],"Vitamin B1":["nmol/L"],"Copper":["µg/dL"],"Selenium":["µg/L"],"Prealbumin":["mg/dL"],"Transferrin":["mg/dL"]},
+  Coag:{"Anti-Xa":["IU/mL"],"Factor VIII":["%"],"Protein C":["%"],"Protein S":["%"],"Antithrombin III":["%"],"Thromboelastography (TEG) R time":["min"]},
+  LFT:{"Direct bilirubin":["mg/dL","µmol/L"],"Serum bile acids":["µmol/L"],"5'-nucleotidase":["U/L"],"Alpha-1 antitrypsin":["mg/dL"]},
+  Sugar:{"Blood ketones (beta-hydroxybutyrate)":["mmol/L"],"2-hour post-glucose":["mg/dL"],"Random capillary glucose":["mg/dL"]},
+  Inflam:{"Serum amyloid A":["mg/L"],"Haptoglobin":["mg/dL"]},
+  Cardiac:{"BNP":["pg/mL"],"Myoglobin":["ng/mL"]},
+  Minerals:{"Anion gap":["mEq/L"],"Corrected calcium":["mg/dL"]},
+  Drain:{"Drain fluid cholesterol":["mg/dL"],"Drain fluid albumin":["g/dL"],"Drain fluid TLC":["cells/cu.mm"],"Drain fluid pH":[""],"Drain fluid glucose":["mg/dL"]},
+  Ascitic:{"Ascitic fluid cholesterol":["mg/dL"],"Ascitic fluid triglycerides":["mg/dL"],"Ascitic fluid amylase":["U/L"],"Ascitic fluid bilirubin":["mg/dL"],"Ascitic fluid creatinine":["mg/dL"]},
+  Urine:{"Urine nitrite":[""],"Urine leukocyte esterase":[""],"Urine amylase":["U/L"],"Urine 5-HIAA (24 h)":["mg/24 h"],"Urine protein (24 h)":["mg/24 h"],"Urine osmolality":["mOsm/kg"]},
+  Stool:{"Stool fat (qualitative)":[""],"Stool reducing substances":[""],"Stool H. pylori antigen":[""],"Stool for Clostridioides difficile toxin":[""],"Stool culture":[""]},
+  Iron:{"Transferrin saturation":["%"]},
+  Panc:{"Serum trypsinogen":["ng/mL"]},
+  RFT:{"Cystatin C":["mg/L"],"Urine albumin/creatinine ratio":["mg/g"]},
+  CBC:{}};
+ Object.keys(T).forEach(function(g){if(!PR[g])return;Object.keys(T[g]).forEach(function(n){if(U[n]||PKM[n])return;PR[g].push(n);PKM[n]=g;U[n]=T[g][n]})});
+})();
+
+OTQ.proc=LIB["Surgical procedure details"];
+
+/* procedures: each with its own date, anaesthesia and ORN */
+var ANA=["General anaesthesia","Spinal anaesthesia","Epidural anaesthesia","Combined spinal-epidural (CSE)","Regional nerve block","Local anaesthesia","Sedation (MAC)","General anaesthesia with epidural","Caudal block","Pudendal / perianal block","TAP block","Brachial plexus block","Local anaesthesia with sedation","Spinal anaesthesia with sedation","Topical / local infiltration"];
+function mkProc(o){
+ o=o||{};var r=document.createElement("div");r.className="row pr";
+ r.innerHTML='<input class="pn" placeholder="Procedure"><button type="button" class="x" aria-label="Remove">✕</button><div class="pm"><input type="date" class="pd"><input class="po" placeholder="ORN"><select class="pa" aria-label="Anaesthesia"><option value="">Anaesthesia…</option>'+ANA.map(function(a){return "<option>"+a+"</option>"}).join("")+'<option value="Other">Other…</option></select><input class="pao" placeholder="Anaesthesia (specify)" hidden></div><div class="pf"><label>Intraoperative findings <small>(one per line)</small></label><textarea class="px" rows="2" placeholder="Type a finding – suggestions appear as you write (one per line)"></textarea></div><div class="pf"><label>Intraoperative complications <small>(one per line)</small></label><textarea class="pxc" rows="1" placeholder="Type a complication, if any – suggestions appear as you write"></textarea></div>';
+ var pa=r.querySelector(".pa"),pao=r.querySelector(".pao"),a=o.a||"",ao=o.ao||"";
+ if(a&&ANA.indexOf(a)<0&&a!="Other"){ao=a;a="Other"}
+ r.querySelector(".pn").value=o.n||"";r.querySelector(".pd").value=o.d||"";r.querySelector(".po").value=o.o||"";pa.value=a;pao.value=ao;pao.hidden=a!="Other";
+ pa.onchange=function(){pao.hidden=pa.value!="Other";if(!pao.hidden)pao.focus()};
+ var px=r.querySelector(".px"),pxc=r.querySelector(".pxc");px.value=o.f||"";pxc.value=o.c||"";
+ taSug(px,"Intraoperative findings");taSug(pxc,"Intraoperative complications");
+ r.querySelectorAll(".pf").forEach(function(pf){var ta=pf.querySelector("textarea"),lb=pf.querySelector("label"),sr=ta;if(!ta.value.trim())pf.classList.add("c");lb.tabIndex=0;lb.setAttribute("role","button");
+  function tg(){pf.classList.toggle("c");if(!pf.classList.contains("c"))sr.focus()}
+  lb.onclick=function(e){e.preventDefault();tg()};lb.onkeydown=function(e){if(e.key=="Enter"||e.key==" "){e.preventDefault();tg()}}});
+ r.querySelector(".x").onclick=function(){r.remove();save()};
+ wrapD(r);document.getElementById("procs").appendChild(r);return r;
+}
+function getProcs(){return [].map.call(document.querySelectorAll("#procs .row.pr"),function(r){var q=function(c){return r.querySelector(c).value};return {n:q(".pn").trim(),d:q(".pd"),a:q(".pa"),ao:q(".pao").trim(),o:q(".po").trim(),f:q(".px").trim(),c:q(".pxc").trim()}})}
+var MEDS=[],MAB={Syrup:'Syp',Suspension:'Susp',Ointment:'Oint',Injection:'Inj'};
+var NUM={"Age":"numeric","Weight (kg)":"decimal","Height (cm)":"decimal","BMI":"decimal","Emergency contact number":"tel"};
+var F=document.getElementById("form");
+function id(l){return "f_"+l.replace(/\W+/g,"_")}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function fd(v){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(v);return m?m[3]+"/"+m[2]+"/"+m[1]:v}
+var DL={"Complications":"Postoperative complications","Plan":"Plan after discharge, if any"};
+S.forEach(function(s){
+ var h=(s.opt?'<label class="tg"><input type="checkbox" id="opt_'+s.opt+'"> + Add '+s.t.toLowerCase()+' (optional)</label>':'')+'<fieldset'+(s.opt?' class="optfs" data-o="'+s.opt+'" hidden':'')+'><legend>'+s.t+'</legend>';
+ if(s.lab){
+  h+='<input type="hidden" id="ld_'+s.lab+'"><div id="rows_'+s.lab+'"></div><div class="eb" data-k="lab" data-ph="'+s.lab+'"></div>';
+ } else if(s.med){
+  h+='<div id="meds"></div><div class="pre"><button type="button" class="addinv" id="addmed">+ Add medicine</button></div>';
+ } else{ if(s.f.length)h+='<div class="kvg">'; s.f.forEach(function(x){
+  var l=x[0],k=x[1],i=id(l);
+  if(l=="__proc"){h+='<div class="fld w2" data-show="Surgical" hidden><label>Procedures performed</label><div id="procs"></div><div class="eb" data-k="proc" data-ph="proc"></div></div>';return}
+  h+='<div class="fld'+(k=="p"||l=="Name"||l=="Address"?' w2':'')+'"'+(x[3]?' data-show="'+x[3]+'" hidden':'')+'><label for="'+i+'">'+(DL[l]||l)+(k=="p"?' <small class="hn">(one item per line)</small>':'')+'</label>';
+  if(k=="p")h+='<textarea id="'+i+'"></textarea>';
+  else if(k=="d")h+='<input type="date" id="'+i+'">';
+  else if(k[0]=="s")h+='<select id="'+i+'"><option value=""></option>'+k.slice(2).split(",").map(function(o){return '<option>'+o+'</option>'}).join("")+'</select>';
+  else h+='<input type="text" id="'+i+'"'+(NUM[l]?' inputmode="'+NUM[l]+'"':'')+'>';
+  h+='</div>';
+ }); if(s.f.length)h+='</div>'}
+ if(s.ot)h+='<div id="ot_'+s.ot+'"></div><div class="eb" data-k="ot" data-ph="'+s.ot+'"></div>';
+ F.insertAdjacentHTML("beforeend",h+'</fieldset>');
+});
+function fillU(r){
+ var t=r.querySelector(".t").value,u=r.querySelector(".u"),l=(U[t]||[]).slice();
+ u.innerHTML=l.map(function(x){return '<option value="'+x+'">'+(x||"(no unit)")+'</option>'}).join("")+(l.indexOf("")<0?'<option value="">(no unit)</option>':'');
+}
+function mkRow(ph,o){
+ o=o||{};var r=document.createElement("div");r.className="row lr";
+ r.innerHTML='<input type="date" class="d"><span class="tn"></span><input type="hidden" class="t"><input type="hidden" class="tc"><input class="v" placeholder="Value"><span class="ut"></span><select class="u"></select><input class="uc" placeholder="Unit" hidden><button type="button" class="x" aria-label="Remove">✕</button><div class="more"><button type="button" class="dup">+ Add another value of this test</button></div>';
+ var t=r.querySelector(".t"),u=r.querySelector(".u"),uc=r.querySelector(".uc"),ut=r.querySelector(".ut");
+ r.querySelector(".d").value=o.d!=null?o.d:document.getElementById("ld_"+ph).value;
+ t.value=o.t||"__o";r.querySelector(".tc").value=o.tc||"";
+ fillU(r);
+ var l=U[t.value]||[],cu=t.value=="__o"||o.u=="__c"||!!o.uc,nm=t.value=="__o"?(o.tc||"Test"):t.value;
+ var tn=r.querySelector(".tn");tn.textContent=SNG[nm]||nm;tn.title=nm;
+ if(cu){u.innerHTML='<option value="__c">custom</option>';u.value="__c";u.hidden=true;uc.hidden=false;uc.value=o.uc||""}
+ else{if(o.u!=null&&o.u!=="")u.value=o.u;if(l.length<=1){u.hidden=true;ut.textContent=l[0]||""}else ut.hidden=true}
+ if(cu)ut.hidden=true;
+ if(o.v)r.querySelector(".v").value=o.v;
+ u.onchange=function(){save()};
+ r.querySelector(".x").onclick=function(){r.remove();save()};
+ r.querySelector(".dup").onclick=function(){var n=mkRow(ph,{t:t.value,tc:r.querySelector(".tc").value,u:cu?"__c":u.value,uc:uc.value,d:"",after:r});save();n.scrollIntoView({block:"center",behavior:"smooth"});setTimeout(function(){n.querySelector(".v").focus({preventScroll:true})},250)};
+ wrapD(r);if(o.after&&o.after.parentNode)o.after.parentNode.insertBefore(r,o.after.nextSibling);else document.getElementById("rows_"+ph).appendChild(r);return r;
+}
+function getRows(ph){
+ return Array.prototype.map.call(document.querySelectorAll("#rows_"+ph+" .row"),function(r){
+  var t=r.querySelector(".t").value,u=r.querySelector(".u").value;
+  return {d:r.querySelector(".d").value,t:t,tc:r.querySelector(".tc").value,v:r.querySelector(".v").value.trim(),u:u,uc:r.querySelector(".uc").value};
+ });
+}
+function $(i){return document.getElementById(i)}
+/* inline entry bar: choose investigation, then Add */
+function buildEb(b){
+ var k=b.dataset.k,ph=b.dataset.ph,nm=ph=="img"?"imaging":ph=="hpe"?"histopathology":ph=="proc"?"procedure":"investigation",
+ it=[{v:"__o",l:"✎  Other (type the name)…",g:"",k:"other custom type name"}];
+ function add(v,l,g,x){it.push({v:v,l:l,g:g,k:(l+" "+g+" "+(x||"")).toLowerCase()})}
+ if(k=="lab"){
+  Object.keys(PR).forEach(function(q){add("P:"+q,(PL[q]||q)+" (all tests)","Whole profile")});
+  Object.keys(PR).forEach(function(q){PR[q].forEach(function(n){add("T:"+n,n,PL[q]||q,SNG[n])})});
+  Object.keys(U).filter(function(n){return !PKM[n]}).forEach(function(n){add("T:"+n,n,"Other tests",SNG[n])});
+ }else OTQ[ph].forEach(function(g){g[1].forEach(function(n){add(n,n,g[0])})});
+ b._items=it;
+ b.innerHTML='<input class="es" type="text" role="combobox" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type to search '+nm+', tap to add…" aria-label="Search '+nm+'"><input class="en" placeholder="'+(k=="lab"?"Test name":"Name")+'" hidden>'+(k=="lab"?'<input class="eu" placeholder="Unit" hidden>':'')+'<input type="date" class="ed"><button type="button" class="ea">+ Add</button>';
+}
+document.querySelectorAll(".eb").forEach(buildEb);
+
+/* searchable picker */
+var CBP=document.createElement("div");CBP.id="cbp";CBP.hidden=true;document.body.appendChild(CBP);
+var CBb=null,CBi=-1,CBf=[],CBel=null,SGc=null;
+function fltr(items,q){
+ q=q.trim().toLowerCase();if(!q)return items.slice();
+ var tk=q.split(/\s+/),out=[];
+ items.forEach(function(x,i){
+  if(!tk.every(function(t){return x.k.indexOf(t)>=0}))return;
+  var l=x.l.toLowerCase(),t=tk[0],sc=l.indexOf(t)==0?0:(l.indexOf(" "+t)>=0||l.indexOf("("+t)>=0?1:(l.indexOf(t)>=0?2:3));
+  out.push([sc,i,x]);
+ });
+ out.sort(function(a,c){return a[0]-c[0]||a[1]-c[1]});
+ return out.map(function(o){return o[2]});
+}
+function cbFilter(b,q){return fltr(b._items,q)}
+function hl(l,q){var t=q.trim().toLowerCase().split(/\s+/)[0],i=t?l.toLowerCase().indexOf(t):-1;return i<0?esc(l):esc(l.slice(0,i))+"<b>"+esc(l.slice(i,i+t.length))+"</b>"+esc(l.slice(i+t.length))}
+function cbPos(){
+ if(!CBel||CBP.hidden)return;
+ var an=CBel.classList.contains("es")&&CBel.closest(".eb")||CBel,r=an.getBoundingClientRect(),vv=window.visualViewport,vh=vv?vv.height:innerHeight,ot=vv?vv.offsetTop:0,
+ kb=vv&&vv.height<innerHeight*0.8,below=ot+vh-r.bottom-(kb?8:92),above=r.top-ot-8;
+ CBP.style.left=r.left+"px";CBP.style.width=r.width+"px";
+ if(below>=180||below>=above){CBP.style.top=(r.bottom+4)+"px";CBP.style.bottom="auto";CBP.style.maxHeight=Math.max(120,Math.min(340,below))+"px"}
+ else{CBP.style.top="auto";CBP.style.bottom=(document.documentElement.clientHeight-r.top+4)+"px";CBP.style.maxHeight=Math.max(120,Math.min(340,above))+"px"}
+}
+function cbHi(){[].forEach.call(CBP.querySelectorAll(".ci"),function(d){d.classList.toggle("on",+d.dataset.i===CBi)});var d=CBP.querySelector('.ci[data-i="'+CBi+'"]');if(d&&d.scrollIntoView)d.scrollIntoView({block:"nearest"})}
+function cbRender(){
+ var b=CBb,q=b.querySelector(".es").value,list=cbFilter(b,q),h="",last=null,qt=q.trim(),exact=false;CBf=[];
+ list.forEach(function(x){
+  if(!qt&&x.g&&x.g!==last){h+='<div class="cg">'+esc(x.g)+'</div>';last=x.g}
+  if(x.l.toLowerCase()===qt.toLowerCase())exact=true;
+  CBf.push(x);h+='<div class="ci" data-i="'+(CBf.length-1)+'"><span>'+(qt?hl(x.l,q):esc(x.l))+'</span>'+(qt&&x.g&&!x.h?'<em>'+esc(x.g)+'</em>':'')+hsX(x)+'</div>';
+ });
+ if(qt&&!exact){CBf.push({v:"__c",l:qt});h+='<div class="ci cu" data-i="'+(CBf.length-1)+'"><span>✎ Use “'+esc(qt)+'” as a custom name</span></div>'}
+ if(!CBf.length)h='<div class="cg">No matches</div>';else h+=hsFoot();
+ CBP.innerHTML=h;CBi=qt&&CBf.length?0:-1;cbHi();cbPos();
+}
+function cbOpen(b){if(b.dataset.k=="proc"){var bs=b._base||(b._base=b._items);b._items=[bs[0]].concat(histItems("Surgical procedure details","Your previous entries").map(function(x){x.v=x.l;return x}),bs.slice(1))}CBb=b;SGc=null;CBel=b.querySelector('.es');CBP.hidden=false;cbRender();setTimeout(cbPos,300)}
+function cbClose(){CBP.hidden=true;CBb=null;SGc=null;CBel=null}
+function cbCustom(b,on){var en=b.querySelector(".en"),eu=b.querySelector(".eu");en.hidden=!on;if(eu)eu.hidden=!on}
+function cbPick(i){
+ var b=CBb,it=CBf[i];if(!b||!it)return;var sel=b.querySelector(".es"),en=b.querySelector(".en");
+ if(it.v=="__c"){sel.dataset.v="__o";en.value=it.l;cbCustom(b,true);cbClose();ebAdd(b);return}
+ sel.value=it.v=="__o"?"Other":it.l;sel.dataset.v=it.v;
+ if(it.v=="__o"){sel.value="";en.value="";cbCustom(b,true);cbClose();en.focus()}else{cbCustom(b,false);cbClose();ebAdd(b)}
+}
+CBP.addEventListener("mousedown",function(e){e.preventDefault()});
+CBP.addEventListener("click",function(e){var d=e.target.closest(".ci");if(d){if(SGc)sgPick(+d.dataset.i);else cbPick(+d.dataset.i)}});
+F.addEventListener("focusin",function(e){if(e.target.classList.contains("es")){var b=e.target.closest(".eb");setTimeout(function(){b.scrollIntoView({block:"center",behavior:"smooth"})},60)}});
+
+F.addEventListener("input",function(e){var t=e.target;if(!t.classList.contains("es"))return;var b=t.closest(".eb");t.dataset.v="";cbCustom(b,false);if(!t.value.trim()){if(CBb===b)cbClose();return}if(CBP.hidden||CBb!==b)cbOpen(b);else cbRender()});
+F.addEventListener("keydown",function(e){
+ var t=e.target;if(!t.classList.contains("es"))return;var b=t.closest(".eb");
+ if(e.key=="ArrowDown"||e.key=="ArrowUp"){e.preventDefault();if(CBP.hidden){if(b.querySelector(".es").value.trim())cbOpen(b)}else if(CBf.length){CBi=(CBi+(e.key=="ArrowDown"?1:-1)+CBf.length)%CBf.length;cbHi()}}
+ else if(e.key=="Enter"){e.preventDefault();if(!CBP.hidden&&CBi>=0)cbPick(CBi);else ebAdd(b)}
+ else if(e.key=="Escape")cbClose();
+});
+document.addEventListener("pointerdown",function(e){if(!CBb&&!SGc)return;var t=e.target;if(t.closest("#cbp"))return;if(t.classList&&t.classList.contains("es"))return;if(SGc&&t===SGc)return;cbClose()});
+window.addEventListener("resize",cbPos);window.addEventListener("scroll",cbPos,true);if(window.visualViewport)visualViewport.addEventListener("resize",cbPos);
+
+/* suggestions for text fields and list-style boxes */
+var HS={};try{HS=JSON.parse(localStorage.getItem("dsm_hist")||"{}")}catch(e){}
+function hsAdd(key,v){v=(v||"").trim();if(!v||v.length>120)return;var a=(HS[key]||[]).filter(function(x){return x.toLowerCase()!=v.toLowerCase()});a.unshift(v);HS[key]=a.slice(0,60);try{localStorage.setItem("dsm_hist",JSON.stringify(HS))}catch(e){}}
+/* remembered entries: remove one / clear all */
+function hsX(x){return x.h?'<button type="button" class="ci-x" data-h="'+esc(x.h)+'" data-t="'+esc(x.l)+'" aria-label="Remove &quot;'+esc(x.l)+'&quot; from remembered entries" title="Forget this entry">\u2715</button>':''}
+function hsFoot(){var ks={},n=0;CBf.forEach(function(x){if(x.h){ks[x.h]=1;n++}});var k=Object.keys(ks);if(!k.length)return '';return '<div class="cl-wrap"><button type="button" class="cl-all" data-h="'+esc(k.join('|'))+'">\u{1F5D1} Forget my previous entries here</button></div>'}
+function hsSave(){try{localStorage.setItem("dsm_hist",JSON.stringify(HS))}catch(e){}}
+function hsDel(key,t){if(key=="__med"){try{localStorage.setItem("dsm_medhist",JSON.stringify(medHist().filter(function(x){return x.n!=t})))}catch(e){}return}HS[key]=(HS[key]||[]).filter(function(x){return x!=t});hsSave()}
+function hsClr(keys){keys.split("|").forEach(function(key){if(key=="__med"){try{localStorage.setItem("dsm_medhist","[]")}catch(e){}}else{delete HS[key]}});hsSave()}
+function hsRefresh(){if(SGc)sgRender(SGc._sg&&SGc._sg.ta?false:!SGc.value.trim());else if(CBb){if(CBb.dataset.k=="proc"){var b=CBb,bs=b._base;b._items=[bs[0]].concat(histItems("Surgical procedure details","Your previous entries").map(function(x){x.v=x.l;return x}),bs.slice(1))}cbRender()}}
+CBP.addEventListener("click",function(e){var x=e.target.closest(".ci-x"),a=e.target.closest(".cl-all");if(!x&&!a)return;e.stopPropagation();e.preventDefault();
+ if(x){hsDel(x.dataset.h,x.dataset.t);hsRefresh();return}
+ if(a.dataset.arm){hsClr(a.dataset.h);hsRefresh();return}
+ a.dataset.arm=1;a.textContent="Tap again to confirm";a.classList.add("arm");setTimeout(function(){if(a.isConnected){delete a.dataset.arm;a.classList.remove("arm");a.textContent="\u{1F5D1} Forget my previous entries here"}},3500)},true);
+function mkIt(l,g,h){return {l:l,g:g||"",h:h||"",k:(l+" "+(g||"")).toLowerCase()}}
+function sgRender(showAll){
+ var el=SGc,c=el._sg,q=c.q?c.q(el):(showAll?"":(el.value||"")),qt=q.trim();if(c.ta&&!qt){cbClose();return}var list=fltr(c.items(),q),h="",last=null,exact=false;CBf=[];
+ list.forEach(function(x){
+  if(!qt&&!c.flat&&x.g&&x.g!==last){h+='<div class="cg">'+esc(x.g)+'</div>';last=x.g}
+  if(x.l.toLowerCase()===qt.toLowerCase())exact=true;
+  CBf.push(x);h+='<div class="ci" data-i="'+(CBf.length-1)+'"><span>'+(qt?hl(x.l,q):esc(x.l))+'</span>'+((qt||c.flat)&&x.g&&!x.h?'<em>'+esc(x.g)+'</em>':'')+hsX(x)+'</div>';
+ });
+ if(c.custom&&qt&&!exact){CBf.push({v:"__c",l:qt});h+='<div class="ci cu" data-i="'+(CBf.length-1)+'"><span>✎ Add “'+esc(qt)+'”</span></div>'}
+ if(!CBf.length){cbClose();return}
+ h+=hsFoot();CBP.innerHTML=h;CBP.hidden=false;CBi=(qt&&c.hi)?0:-1;cbHi();cbPos();
+}
+function sgOpen(el,all){CBb=null;SGc=el;CBel=el;sgRender(all);setTimeout(cbPos,300)}
+function sgPick(i){var el=SGc,it=CBf[i];if(!el||!it)return;var c=el._sg;c.pick(it,el);if(c.ta)cbClose();else if(c.keep){el.value="";sgRender(true)}else cbClose()}
+document.addEventListener("focusin",function(e){var t=e.target;if(t._sg&&!t._sg.ta)sgOpen(t,true)});
+document.addEventListener("click",function(e){var t=e.target;if(t._sg&&!t._sg.ta&&(CBP.hidden||SGc!==t))sgOpen(t,true)});
+document.addEventListener("input",function(e){var t=e.target;if(!t._sg)return;if(SGc!==t)sgOpen(t,false);else sgRender(false)});
+document.addEventListener("keydown",function(e){
+ var t=e.target;if(!t._sg)return;
+ if((e.key=="ArrowDown"||e.key=="ArrowUp")&&!(t._sg.ta&&(CBP.hidden||SGc!==t||!CBf.length))){e.preventDefault();if(CBP.hidden||SGc!==t)sgOpen(t,true);else if(CBf.length){CBi=(CBi+(e.key=="ArrowDown"?1:-1)+CBf.length)%CBf.length;cbHi()}}
+ else if(e.key=="Enter"){if(!CBP.hidden&&SGc===t&&CBi>=0){e.preventDefault();sgPick(CBi)}}
+ else if(e.key=="Escape")cbClose();
+});
+document.addEventListener("change",function(e){var t=e.target;
+ if(t._sg&&t._sg.learn)hsAdd(t._sg.key,t.value);
+ else if(t.tagName=="TEXTAREA"&&LIB[t.dataset.lib]){var lb=t.dataset.lib,have={};LIB[lb].forEach(function(g){g[1].forEach(function(x){have[x.toLowerCase()]=1})});t.value.split(/\r?\n/).forEach(function(x){if(x.trim()&&!have[x.trim().toLowerCase()])hsAdd(lb,x)})}
+});
+function histItems(key,g){return (HS[key]||[]).map(function(x){return mkIt(x,g,key)})}
+
+/* suggestions while typing inside list boxes (one item per line) */
+function taLine(ta){var v=ta.value,p=ta.selectionStart==null?v.length:ta.selectionStart,ls=v.lastIndexOf("\n",p-1)+1,le=v.indexOf("\n",p);if(le<0)le=v.length;return {ls:ls,le:le,t:v.slice(ls,le)}}
+function taSug(ta,lb){ta.dataset.lib=lb;ta.setAttribute("autocomplete","off");if(!ta.placeholder)ta.placeholder="Start typing – suggestions appear as you write";
+ ta._sg={custom:0,keep:0,hi:0,flat:0,ta:1,q:function(el){return taLine(el).t},items:function(){var have={},cur=taLine(ta).t.trim().toLowerCase();ta.value.split(/\r?\n/).forEach(function(x){have[x.trim().toLowerCase()]=1});
+   var out=histItems(lb,"Your previous entries");LIB[lb].forEach(function(g){g[1].forEach(function(x){out.push(mkIt(x,g[0]))})});
+   var seen={};return out.filter(function(x){var kk=x.l.toLowerCase();if((have[kk]&&kk!==cur)||seen[kk])return false;seen[kk]=1;return true})},
+  pick:function(it,el){var L=taLine(el),v=el.value,atEnd=L.le>=v.length,txt=it.l;el.value=v.slice(0,L.ls)+txt+(atEnd?"\n":v.slice(L.le));var pos=L.ls+txt.length+(atEnd?1:0);el.setSelectionRange(pos,pos);el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));if(typeof grow=="function")grow(el)}};
+}
+S.forEach(function(sc){(sc.f||[]).forEach(function(x){if(x[1]=="p"&&LIB[x[0]]){var ta=document.getElementById(id(x[0]));if(ta)taSug(ta,x[0])}})});
+Object.keys(SGT).forEach(function(lb){
+ var el=document.getElementById(id(lb));if(!el)return;var d=SGT[lb];
+ el._sg={custom:0,keep:0,hi:0,flat:1,learn:d.learn,key:lb,items:function(){var seen={},out=[];d.b.forEach(function(x){out.push(mkIt(x[0],x[1]));seen[x[0].toLowerCase()]=1});
+   if(d.learn)histItems(lb,"Used before").forEach(function(x){if(!seen[x.l.toLowerCase()]){seen[x.l.toLowerCase()]=1;out.push(x)}});return out},
+  pick:function(it,e){e.value=it.l;e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}))}};
+ el.setAttribute("autocomplete","off");
+});
+function cbResolve(b){
+ var sel=b.querySelector(".es"),q=sel.value.trim();if(!q)return "";
+ var l=cbFilter(b,q),ex=l.filter(function(x){return x.l.toLowerCase()===q.toLowerCase()});
+ if(ex.length)return ex[0].v;
+ if(l.length==1&&l[0].v!="__o")return l[0].v;
+ if(!l.length||(l.length==1&&l[0].v=="__o")){b.querySelector(".en").value=q;cbCustom(b,true);return "__o"}
+ cbOpen(b);return "";
+}
+function ebAdd(b){
+ var k=b.dataset.k,ph=b.dataset.ph,sel=b.querySelector(".es"),d=b.querySelector(".ed").value,en=b.querySelector(".en"),eu=b.querySelector(".eu"),first=null,n,v=sel.value.trim()?(sel.dataset.v||cbResolve(b)):"";
+ function bad(el){b.classList.add("err");setTimeout(function(){b.classList.remove("err")},900);if(el)el.focus()}
+ if(!v){bad(sel);return}
+ if(v=="__o"&&!en.value.trim()){bad(en);return}
+ if(k=="lab"){$("ld_"+ph).value=d;
+  if(v.slice(0,2)=="P:")PR[v.slice(2)].forEach(function(t){var r=mkRow(ph,{t:t});first=first||r});
+  else if(v=="__o")first=mkRow(ph,{t:"__o",tc:en.value.trim(),u:"__c",uc:eu.value.trim()});
+  else first=mkRow(ph,{t:v.slice(2)});
+ }else if(k=="proc"){
+  n=v=="__o"?en.value.trim():v;var L=getProcs().pop()||{};
+  first=mkProc({n:n,d:d||L.d||"",a:L.a||"",ao:L.ao||"",o:L.o||""});if(v=="__o")hsAdd("Surgical procedure details",n);
+ }else{
+  n=v=="__o"?en.value.trim():v;
+  first=mkOt(ph,{n:n,d:d});
+ }
+ sel.value="";sel.dataset.v="";en.value="";cbCustom(b,false);if(eu)eu.value="";cbClose();
+ save();growAll();
+ if(first){first.scrollIntoView({block:"center",behavior:"smooth"});var f=k=="proc"?null:first.querySelector(k=="lab"?".v":".ox");if(f)setTimeout(function(){f.focus({preventScroll:true})},300)}
+}
+F.addEventListener("click",function(e){var a=e.target.closest(".ea");if(a)ebAdd(a.closest(".eb"))});
+function labOut(ph,title){
+ var rows=getRows(ph).filter(function(r){return r.v}),g=[],m={};
+ if(!rows.length)return "";
+ rows.forEach(function(r){
+  var n=r.t=="__o"?(r.tc||"Test"):r.t,u=r.u=="__c"?r.uc:r.u,k=r.d||"";
+  if(!(k in m)){m[k]=[];g.push(k)}
+  m[k].push(esc(n)+" "+esc(r.v)+(u?" "+esc(u):""));
+ });
+ var o='<p style="margin:12px 0 3px"><b>'+title.toUpperCase()+'</b></p>';
+ g.forEach(function(k){o+='<p style="margin:2px 0">'+(k?'<b>'+fd(k)+':</b> ':'')+m[k].join(", ")+'</p>'});
+ return o;
+}
+function val(l){var e=document.getElementById(id(l));return e?e.value.trim():''}
+function prog(){var all=document.querySelectorAll('#form fieldset:not([hidden])'),n=[].filter.call(all,function(x){return [].some.call(x.querySelectorAll('textarea,input:not([type=checkbox])'),function(i){return i.value&&i.value.trim()})}).length;document.getElementById('pb').style.width=(all.length?Math.round(100*n/all.length):0)+'%'}
+function chip(){var c=document.getElementById('chip'),a=[val('Age')?val('Age')+'Y':'',val('Sex')?val('Sex')[0]:''].filter(Boolean).join('/'),t=[val('Name'),a,val('IRN')?'IRN '+val('IRN'):''].filter(Boolean).join(' \u00b7 ');c.textContent=t;c.hidden=!t}
+function los(){var a=val('Date of admission'),d=val('Date of discharge');if(!a||!d)return '';var n=Math.round((new Date(d)-new Date(a))/864e5);return n>=0?n+' days':''}
+function build(){
+ var F='Arial,Helvetica,sans-serif',PT=11,NAVY='#000000',GREY='#000000',RULE='#000000',TINT='#FFFFFF',TINT2='#FFFFFF',INK='#000000',v;
+ var cv=document.createElement('canvas').getContext('2d');
+ function pl(h){return h.replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')}
+ function mw(h){var w=0,bd=false;h.split(/(<\/?b>)/).forEach(function(t){if(t=='<b>')bd=true;else if(t=='</b>')bd=false;else if(t){cv.font=(bd?'bold ':'')+(PT/.75)+'px Arial,Helvetica,sans-serif';w+=cv.measureText(pl(t)).width}});return w*.75}
+ var SPW=(cv.font=(PT/.75)+'px Arial,Helvetica,sans-serif',cv.measureText(' ').width*.75)||2.9;
+ function nb(n){return new Array(Math.max(1,n)+1).join('&nbsp;')}
+ function seg(parts,st,pre){var h='';if(parts[0][0]>0)parts=[[0,'']].concat(parts);parts.forEach(function(p,i){var nx=parts[i+1];if(!nx){h+=p[1]||'';return}var W=nx[0]-p[0],n=Math.max(1,Math.round((W-mw(p[1]||''))/SPW));h+='<span style="display:inline-block;width:'+W+'pt;white-space:nowrap;vertical-align:baseline">'+(p[1]||'')+nb(n)+'</span>'});return '<p style="margin:0;white-space:nowrap;'+(st||'')+'">'+(pre||'')+h+'</p>'}
+ var SPH='<p style="margin:0;font-size:9pt;line-height:1.2">&nbsp;</p>',SP='<p style="margin:0;font-size:5pt;line-height:1">&nbsp;</p>',SP2='<p style="margin:0">&nbsp;</p>';
+ function G(t){return t}
+ function GL(t){return '<b>'+t+':</b>'}
+ function H(t){return SPH+'<p style="margin:0 0 4pt;page-break-after:avoid;font-size:12pt;font-weight:bold;text-decoration:underline">'+esc(t).toUpperCase()+'</p>'}
+ function SUB(t){return '<p style="margin:6pt 0 2pt;page-break-after:avoid;font-weight:bold">'+t+':</p>'}
+ function LN(x){return String(x||'').split(/\r?\n/).map(function(z){return z.trim()}).filter(Boolean).map(esc)}
+ function PA(x){return LN(x).map(function(z){return '<p style="margin:0 0 4pt">'+z+'</p>'}).join('')}
+ function LI(a,f){if(a.length==1&&f!='N')return '<p style="margin:0 0 3pt">'+a[0]+'</p>';return a.map(function(z,i){return '<p style="margin:0 0 3pt 20pt;text-indent:-16pt">'+((f=='n'||f=='N')?(i+1)+'.':'\u2022')+'&nbsp;&nbsp;'+z+'</p>'}).join('')}
+ function opt(k){var e=document.getElementById('opt_'+k);return e&&e.checked}
+ function up(t){return esc(t).toUpperCase()}
+ var o='<div style="font-family:'+F+';font-size:'+PT+'pt;color:'+INK+';line-height:1.4">';
+ o+='<div data-hdr="1"><p style="margin:0;text-align:center;font-size:16pt;font-weight:bold;line-height:1.2">GAUHATI MEDICAL COLLEGE &amp; HOSPITAL</p>'
+  +'<p style="margin:1pt 0 4pt;text-align:center;font-size:11pt">Guwahati, Assam</p>'
+  +'<p style="margin:0;text-align:center;font-size:13pt;font-weight:bold;line-height:1.3">Department of Surgical Gastroenterology,</p>'
+  +'<p style="margin:0;text-align:center;font-size:13pt;font-weight:bold;line-height:1.3">Liver Transplantation and HPB</p>'
+  +'<hr style="border:0;border-top:1pt solid #000;height:0;margin:6pt 0 8pt"></div>'
+  +'<p style="margin:0 0 10pt;text-align:center;font-size:14pt;font-weight:bold;text-decoration:underline">DISCHARGE SUMMARY</p>';
+ /* particulars */
+ var age=val('Age'),as=[age?(/^\d+$/.test(age)?age+' Y':age):'',val('Sex')].filter(Boolean).join(' / '),wt=val('Weight (kg)'),ht=val('Height (cm)'),bm=val('BMI'),ls=los();
+ var LP=[['Name',val('Name')?'<b>'+up(val('Name'))+'</b>':''],['Age/Sex',esc(as)],['C/O',esc(val('C/O'))],['Consultant',esc(val('Consultant'))],['Admitted',fd(val('Date of admission'))],['Discharged',fd(val('Date of discharge'))]].filter(function(x){return x[1]}),
+ RP=[['Hospital no',esc(val('Hospital No'))],['MRD no',esc(val('MRD No'))],['IRN',esc(val('IRN'))],['Blood group',esc(val('Blood group'))],['Weight',wt?esc(/^[\d.]+$/.test(wt)?wt+' kg':wt):''],['Height',ht?esc(/^[\d.]+$/.test(ht)?ht+' cm':ht):''],['BMI',bm?esc(/^[\d.]+$/.test(bm)?bm+' kg/m²':bm):''],['PS (ECOG)',esc(val('PS (ECOG)'))]].filter(function(x){return x[1]});
+ var X1=78,C2=262,X2=350,PS='padding:1pt 0;',PSP='';
+ for(var i=0;i<Math.max(LP.length,RP.length);i++){var l=LP[i]||['',''],r=RP[i]||['',''];
+  if(l[1]&&mw(l[1])>C2-X1-10){o+=seg([[0,GL(l[0])],[X1,l[1]]],PS);if(r[1])o+=seg([[C2,GL(r[0])],[X2,r[1]]],PS);continue}
+  o+=seg([[0,l[1]?GL(l[0]):''],[X1,l[1]],[C2,r[1]?GL(r[0]):''],[X2,r[1]]],PS)}
+ if(v=val('Address'))o+=seg([[0,GL('Address')],[X1,esc(v)]],PS);
+ 
+ /* clinical */
+ if(v=val('Diagnosis'))o+=H('Diagnosis')+LI(LN(v).map(function(z){return '<b>'+z+'</b>'}),'n');
+ if(v=val('Co-morbidities'))o+=H('Co-morbidities')+LI(LN(v),'N');
+ if(opt('vacc')&&(v=val('Pre-operative vaccination status')))o+=H('Pre-operative vaccination')+LI(LN(v),'b');
+ var mg=val('Type of management');
+ if(mg=='Surgical'){var pcs=getProcs().filter(function(x){return x.n}).map(function(x){var an=x.a=='Other'?x.ao:x.a,t=esc(x.n);
+   if(an)an=an.charAt(0).toLowerCase()+an.slice(1);
+   if(an||x.d)t+=' performed';if(an)t+=' under '+esc(an);if(x.d)t+=' on '+fd(x.d);if(x.o)t+=' ORN : '+esc(x.o);return t});
+  if(pcs.length)o+=H('Procedure')+LI(pcs,'n');
+  var ifp=getProcs().filter(function(x){return x.n||x.f||x.c}),fl=function(t){return LI(LN(t),'b')};
+  [['f','Intraoperative findings'],['c','Intraoperative complications']].forEach(function(q){var ws=ifp.filter(function(x){return x[q[0]]});
+   if(!ws.length)return;o+=H(q[1]);
+   if(ifp.length==1)o+=fl(ws[0][q[0]]);
+   else ws.forEach(function(x){o+='<p style="margin:2pt 0 2pt 4pt;page-break-after:avoid"><b>In '+(esc(x.n)||'procedure')+' -</b></p>'+fl(x[q[0]])})})}
+ else if(/^Conservative/.test(mg)&&(v=val('Conservative / medical management details')))o+=H('Conservative / medical management')+LI(LN(v),'n');
+ if(v=val('Complications'))o+=H(mg=='Conservative / medical'?'Complications':'Postoperative complications')+LI(LN(v),'N');
+ if(opt('bt')&&(v=val('Blood transfusion details')))o+=H('Blood transfusion')+PA(v);
+ if(v=val('Plan'))o+=H('Plan after discharge')+LI(LN(v),'n');
+ if(v=val('History of presenting illness'))o+=H('History of presenting illness')+PA(v);
+ if(opt('cons')&&(v=val('Consultations and referrals')))o+=H('Consultations and referrals')+LI(LN(v),'b');
+ /* investigations */
+ var SN=SNG,
+  PO=Object.keys(PR),PN=(function(){var n={};Object.keys(PL).forEach(function(k){n[k]=PL[k]});n.Other='Others';return n})(),PK={};
+ PO.forEach(function(k){(PR[k]||[]).forEach(function(t){PK[t]=k})});
+ function labL(ph){var by={},ds=[];getRows(ph).filter(function(r){return r.v}).forEach(function(r){var k=r.d||'';if(!(k in by)){by[k]={};ds.push(k)}var t=r.t=='__o'?(r.tc||'Test'):r.t,pn=r.t=='__o'?'Other':(PK[r.t]||'Other'),un=r.u=='__c'?r.uc:r.u;(by[k][pn]=by[k][pn]||[]).push(esc(SN[t]||t)+' '+esc(r.v)+(un?' '+G(esc(un)):''))});
+  ds.sort();return ds.map(function(k){var g=by[k];return (k?'<p style="margin:4pt 0 1pt;page-break-after:avoid"><u>'+fd(k)+'</u></p>':'')+PO.concat(['Other']).filter(function(p){return g[p]}).map(function(p){return '<p style="margin:0 0 2pt 18pt;text-indent:-14pt">'+G(PN[p]+':')+'&nbsp;&nbsp;'+g[p].join(', ')+'</p>'}).join('')}).join('')}
+ function RP2(nm,d,txt){var L=LN(txt),hd='<b>'+nm+'</b>'+(d?' ('+d+')':'');return L.length==1?'<p style="margin:3pt 0 2pt">'+hd+': '+L[0]+'</p>':'<p style="margin:3pt 0 2pt">'+hd+':</p>'+LI(L,'b')}
+ function otL(ph){return getOt(ph).filter(function(x){return x.x}).map(function(x){return RP2(esc(x.n||'Test'),fd(x.d),x.x)}).join('')}
+ var pre=labL('pre')+otL('pre'),post=labL('post')+otL('post');
+ if(pre||post){o+=H('Investigations');if(pre)o+=SUB('Pre-operative')+pre;if(post)o+=(pre?SP:'')+SUB('Post-operative')+post}
+ var im=otL('img');if(im)o+=H('Imaging')+im;var hp=otL('hpe');if(hp)o+=H('Histopathology')+hp;
+ if(v=val('Course during hospital stay'))o+=H('Course in hospital')+PA(v);
+ if(opt('cond')&&(v=val('Condition at discharge')))o+=H('Condition at discharge')+PA(v);
+ var AB={Syrup:'Syp',Suspension:'Susp',Ointment:'Oint',Injection:'Inj'},md=getMeds().filter(function(x){return x.n.trim()}).map(function(x){
+  var f=x.f=='__o'?x.fc:(AB[x.f]||x.f),q=x.q=='__c'?x.qc:x.q,sg=[x.d,q,x.t].filter(function(z){return z&&z.trim()}).join(' '),
+  du=x.du&&x.du[0]=='('?', '+x.du.replace(/[()]/g,''):(x.dn?' for '+x.dn+' '+(x.dn=='1'?x.du.replace(/s$/,''):x.du):'');
+  return esc(f)+' '+esc(x.n.trim())+(sg||du?' – '+esc((sg+du).trim()):'')});
+ if(md.length)o+=H('Treatment at discharge')+LI(md,'n');
+ var ad=LN(val('Advice at discharge')).concat(LN(val('Wound and drain care')));
+ if(opt('fu'))ad=ad.concat(LN(val('Follow-up date and instructions')));
+ var ws=LN(val('Warning signs: return to emergency if')),ec=val('Emergency contact number');
+ if(ad.length||ws.length||ec){o+=H('Advice on discharge')+LI(ad,'n');
+  if(ws.length)o+='<p style="margin:5pt 0 2pt"><b>Return to the emergency department if:</b></p>'+LI(ws,'b');
+  if(ec)o+='<p style="margin:5pt 0 0"><b>Emergency contact:</b> '+esc(ec)+'</p>'}
+ /* sign-off */
+ var cn=val('Verified by (Consultant)'),rn=val('Prepared by (Resident)'),dg=val('Designation of resident')||'Resident',SC2=290;
+ var KA='page-break-after:avoid;';
+ o+='<div style="page-break-inside:avoid;break-inside:avoid">'+SP2.replace('margin:0','margin:0;'+KA);
+ o+=SP2.replace('margin:0','margin:0;'+KA);
+ o+=seg([[0,'<b>'+esc(cn||' ')+'</b>'],[SC2,'<b>'+esc(rn||' ')+'</b>']],KA);
+ o+=seg([[0,G('Consultant')],[SC2,G(esc(dg))]],KA);
+ o+=seg([[0,G('LT &amp; HPB unit, GMCH')],[SC2,G('LT &amp; HPB unit, GMCH')]])+'</div>';
+  o+='</div>';return o}
+
+var FM=['Tab','Cap','Syrup','Suspension','Ointment','Cream','Gel','Lotion','Powder','Sachet','Drops','Injection','Mouthwash','Inhaler','Spray','Eye drops','Ear drops','Suppository','Enema','Lozenge','Patch'],
+TOP={Ointment:1,Cream:1,Gel:1,Lotion:1},
+DD={Tab:'1 tab',Cap:'1 cap',Syrup:'5 ml',Suspension:'5 ml',Powder:'1 sachet',Sachet:'1 sachet',Drops:'2 drops',Injection:'1 amp',Mouthwash:'10 ml'},
+FQ=['once daily','twice daily','thrice daily','four times daily','at bedtime','once weekly','every 8 hours','every 12 hours','every 6 hours','every 4 hours','alternate days','three times weekly','once daily in the morning','once daily at night','SOS (when required)'],
+TM=['after food','before food','with food','on empty stomach','at bedtime','in the morning','at night','30 minutes before food','1 hour before food','2 hours after food','with plenty of water','with milk'],
+DU=['days','weeks','months','years','(until review)','(as needed)','(continue)'];
+function ops(a){return a.map(function(k){return '<option>'+k+'</option>'}).join('')}
+function medT(title,H,td,CL){
+ var m=getMeds().filter(function(x){return x.n.trim()});if(!m.length)return '';
+ var t=H(title)+'<table style="border-collapse:collapse;width:100%;font-size:10.5pt"><tr>'+['#','Medicine','Directions (Sig)','Duration'].map(function(h){return '<td style="'+td+'background:'+CL+';color:#fff;font-weight:bold">'+h+'</td>'}).join('')+'</tr>';
+ m.forEach(function(x,i){
+  var f=x.f=='__o'?x.fc:x.f,q=x.q=='__c'?x.qc:x.q,
+  sg=[x.d,q,x.t].filter(function(z){return z&&z.trim()}).join(' '),
+  du=x.du[0]=='('?x.du.replace(/[()]/g,''):(x.dn?x.dn+' '+(x.dn=='1'?x.du.replace(/s$/,''):x.du):'');
+  sg=sg.charAt(0).toUpperCase()+sg.slice(1);
+  t+='<tr style="background:'+(t.split('<tr').length%2?'#fff':'#f6f8fb')+'"><td style="'+td+'width:5%">'+(i+1)+'</td><td style="'+td+'"><b>'+esc(f)+'</b> '+esc(x.n.trim())+'</td><td style="'+td+'">'+esc(sg)+'</td><td style="'+td+'width:18%">'+esc(du)+'</td></tr>';
+ });
+ return t+'</table>';
+}
+function mkOt(ph,o){
+ o=o||{};var r=document.createElement('div');r.className='row ot';
+ r.innerHTML='<input class="on" placeholder="Investigation"><input class="od" type="date"><button type="button" class="x" aria-label="Remove">\u2715</button><textarea class="ox" rows="1" placeholder="Result / description"></textarea><div class="more"><button type="button" class="dup">+ Add another entry of this investigation</button></div>';
+ r.querySelector('.od').value=o.d||'';r.querySelector('.on').value=o.n||'';r.querySelector('.ox').value=o.x||'';
+ r.querySelector('.x').onclick=function(){r.remove();save()};
+ r.querySelector('.dup').onclick=function(){var n=mkOt(ph,{n:r.querySelector('.on').value,d:'',after:r});save();growAll();n.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(function(){n.querySelector('.ox').focus({preventScroll:true})},250)};
+ wrapD(r);if(o.after&&o.after.parentNode)o.after.parentNode.insertBefore(r,o.after.nextSibling);else document.getElementById('ot_'+ph).appendChild(r);return r;
+}
+function getOt(ph){
+ return Array.prototype.map.call(document.querySelectorAll('#ot_'+ph+' .row'),function(r){
+  return {d:r.querySelector('.od').value,n:r.querySelector('.on').value.trim(),x:r.querySelector('.ox').value.trim()};
+ });
+}
+function otT(ph,title,H,td,CL){
+ var m=getOt(ph).filter(function(x){return x.n||x.x});if(!m.length)return '';
+ var t=H(title)+'<table style="border-collapse:collapse;width:100%;font-size:10.5pt"><tr>'+['Test','Description / result'].map(function(h){return '<td style="'+td+'background:'+CL+';color:#fff;font-weight:bold">'+h+'</td>'}).join('')+'</tr>';
+ m.forEach(function(x){
+  t+='<tr style="background:'+(t.split('<tr').length%2?'#fff':'#f6f8fb')+'"><td style="'+td+'width:30%"><b>'+esc(x.n)+'</b>'+(x.d?'<br>'+fd(x.d):'')+'</td><td style="'+td+'">'+esc(x.x).replace(/\r?\n/g,'<br>')+'</td></tr>';
+ });
+ return t+'</table>';
+}
+F.addEventListener('click',function(e){var l=e.target.closest('legend');if(l)l.parentNode.classList.toggle('cl')});
+document.getElementById('colA').onclick=function(){document.querySelectorAll('#form fieldset').forEach(function(f){f.classList.add('cl')})};
+document.getElementById('expA').onclick=function(){document.querySelectorAll('#form fieldset').forEach(function(f){f.classList.remove('cl')})};
+var P=document.getElementById("paper"),M=document.getElementById("msg");
+function vis(){tidyAll();chip();prog();var m=document.getElementById("f_Type_of_management").value;
+ document.querySelectorAll(".fld[data-show]").forEach(function(d){d.hidden=d.dataset.show!=m});
+ var cl=document.querySelector("label[for=f_Complications]");if(cl&&cl.firstChild&&cl.firstChild.nodeType==3)cl.firstChild.nodeValue=m=="Conservative / medical"?"Complications":"Postoperative complications";
+ var an=document.getElementById("f_Type_of_anaesthesia"),ao=document.getElementById("f_Other_anaesthesia_specify_");if(an&&ao)ao.closest(".fld").hidden=m!="Surgical"||an.value!="Other";
+ document.querySelectorAll(".optfs").forEach(function(f){f.hidden=!document.getElementById("opt_"+f.dataset.o).checked})}
+function fitPaper(){var i=P.firstElementChild;if(!i||P.hidden)return;while(i&&i.tagName!="DIV")i=i.nextElementSibling;if(!i)return;i.style.zoom=1;var cs=getComputedStyle(P),av=P.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),w=i.scrollWidth;if(w>av+1&&av>0)i.style.zoom=(av/w).toFixed(3)}
+function show(){P.innerHTML=build();P.hidden=false;fitPaper()}
+window.addEventListener("resize",fitPaper);
+document.getElementById("show").onclick=function(){show();P.scrollIntoView()};
+document.getElementById("copy").onclick=function(){
+ show();var h=P.innerHTML,ok=function(){M.textContent="Copied. Open Word and paste."};
+ function fb(){try{var r=document.createRange();r.selectNodeContents(P);var s=getSelection();s.removeAllRanges();s.addRange(r);
+  if(document.execCommand("copy"))ok();else M.textContent="Press and hold the preview, select all, copy."}catch(e){M.textContent="Press and hold the preview, select all, copy."}}
+ try{navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([h],{type:"text/html"}),"text/plain":new Blob([P.innerText],{type:"text/plain"})})]).then(ok,fb)}catch(e){fb()}
+};
+function simple(){return document.querySelectorAll("#form fieldset > input:not([class]),#form fieldset > textarea,#form fieldset > select:not([class])")}
+document.getElementById("clr").onclick=function(){
+ if(!window.__arm){window.__arm=1;var b=this;b.lastChild.textContent="Confirm";M.textContent="This erases everything on the page. Tap again to confirm.";setTimeout(function(){window.__arm=0;b.lastChild.textContent="Clear all";M.textContent="Fill in, tap Copy, then paste into a blank Word file."},4000);return}window.__arm=0;this.lastChild.textContent="Clear all";
+ document.querySelectorAll("#optbar input,#form input,#form textarea,#form select").forEach(function(e){e.value="";e.checked=false});
+ ["pre","post"].forEach(function(p){document.getElementById("rows_"+p).innerHTML=""});MEDS.length=0;renderMeds();OTS.forEach(function(p){document.getElementById("ot_"+p).innerHTML=""});document.getElementById("procs").innerHTML="";
+ P.hidden=true;document.querySelectorAll('.dw').forEach(function(w){w.classList.remove('has')});document.querySelectorAll('#form fieldset').forEach(function(f){f.classList.remove('cl')});vis();save();growAll();M.textContent='Page cleared. Ready for a new summary.';window.scrollTo({top:0,behavior:'smooth'});
+};
+function mark(sel,k){var rs=document.querySelectorAll(sel);for(var i=0;i<rs.length;i++)rs[i].classList.toggle('cont',!!rs[i+1]&&k(rs[i])==k(rs[i+1]))}
+function tidyAll(){['pre','post'].forEach(function(p){mark('#rows_'+p+' .row',function(r){return r.querySelector('.t').value+'|'+r.querySelector('.tc').value})});
+ OTS.forEach(function(p){mark('#ot_'+p+' .row',function(r){return r.querySelector('.on').value.trim().toLowerCase()})})}
+function save(){tidyAll();try{var d={},l={pre:getRows("pre"),post:getRows("post")};
+ document.querySelectorAll("#optbar input,#form input[id],#form textarea[id],#form select[id]").forEach(function(e){d[e.id]=e.type=="checkbox"?(e.checked?"1":""):e.value});
+ d.__labs=l;d.__meds=getMeds();d.__ot={};OTS.forEach(function(p){d.__ot[p]=getOt(p)});d.__procs=getProcs();localStorage.setItem("dsm2",JSON.stringify(d))}catch(e){}}
+try{var d=JSON.parse(localStorage.getItem("dsm2")||"{}");
+ for(var k in d){if(k=="__labs")continue;var e=document.getElementById(k);if(e){if(e.type=="checkbox")e.checked=!!d[k];else e.value=d[k]}}
+ if(d.__labs)["pre","post"].forEach(function(p){(d.__labs[p]||[]).forEach(function(o){mkRow(p,o)})});
+ (d.__meds||[]).forEach(function(o){mkMed(o)});
+ (d.__procs||[]).forEach(function(o){mkProc(o)});
+ if(!d.__procs&&(d.f_Surgical_procedure_details||d.f_Date_of_surgery)){String(d.f_Surgical_procedure_details||"").split(/\r?\n/).filter(function(x){return x.trim()}).forEach(function(x){mkProc({n:x.trim(),d:d.f_Date_of_surgery||"",a:d.f_Type_of_anaesthesia==="Other"?(d.f_Other_anaesthesia_specify_||"Other"):(d.f_Type_of_anaesthesia||""),o:d.f_ORN||""})})}
+ if(d.f_Intraoperative_findings){var fp=document.querySelector("#procs .row.pr")||mkProc({});var fx=fp.querySelector(".px");if(!fx.value)fx.value=d.f_Intraoperative_findings}
+ OTS.forEach(function(p){((d.__ot||{})[p]||[]).forEach(function(o){mkOt(p,o)})});
+ if(d.f_HPE&&!((d.__ot||{}).hpe||[]).length)mkOt('hpe',{n:'HPE',d:d.f_HPE_dt||'',x:d.f_HPE});
+ if(!((d.__ot||{}).img||[]).length)[['f_CT','CT'],['f_USG','USG'],['f_MRI_or_other_imaging','MRI / other imaging'],['f_MRCP','MRCP']].forEach(function(q){if(d[q[0]])mkOt('img',{n:q[1],d:d[q[0]+'_dt']||'',x:d[q[0]]})});
+}catch(e){}
+["input","change"].forEach(function(n){document.addEventListener(n,function(){vis();save()})});
+document.querySelectorAll('.eb[data-k=lab]').forEach(function(b){b.querySelector('.ed').value=$('ld_'+b.dataset.ph).value});
+vis();
+function grow(t){t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px'}
+function growAll(){document.querySelectorAll('#form textarea').forEach(function(t){if(t.offsetParent)grow(t)})}
+document.addEventListener('input',function(e){if(e.target.tagName=='TEXTAREA')grow(e.target)});
+['click','change'].forEach(function(n){document.addEventListener(n,function(){setTimeout(growAll,40)})});
+window.addEventListener('resize',growAll);
+var DNS=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+function dIso(y,m,d){var t=new Date(y,m-1,d);if(t.getFullYear()!=y||t.getMonth()!=m-1||t.getDate()!=d)return null;return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2)}
+function dParse(t,strict){t=String(t).trim().toLowerCase();if(t=='t'||t=='today'){var n=new Date();return dIso(n.getFullYear(),n.getMonth()+1,n.getDate())}
+ var m=t.match(/^(\d{1,2})[\s\/.\-](\d{1,2})[\s\/.\-](\d{4}|\d{2})$/)||t.match(/^(\d{2})(\d{2})(\d{4}|\d{2})$/);if(!m)return null;
+ if(strict&&m[3].length!=4)return null;var y=+m[3];if(m[3].length==2)y+=2000;return dIso(y,+m[2],+m[1])}
+function dShow(v){return /^\d{4}-\d\d-\d\d$/.test(v||'')?v.slice(8)+'/'+v.slice(5,7)+'/'+v.slice(0,4):''}
+function wrapD(root){root.querySelectorAll('input[type=date]').forEach(function(i){if(i.parentNode.classList.contains('dw'))return;
+ var w=document.createElement('div');w.className='dw';i.parentNode.insertBefore(w,i);
+ var tx=document.createElement('input');tx.type='text';tx.className='dt';tx.setAttribute('inputmode','numeric');tx.setAttribute('autocomplete','off');tx.setAttribute('placeholder','dd/mm/yyyy');tx.setAttribute('aria-label','Date (type dd/mm/yyyy or tap the calendar)');tx.maxLength=10;
+ w.appendChild(tx);w.appendChild(i);i.tabIndex=-1;i.setAttribute('aria-label','Pick date from calendar');
+ var cur=i.value,typing=false;
+ Object.defineProperty(i,'value',{configurable:true,get:function(){return DNS.get.call(i)},set:function(v){DNS.set.call(i,v);if(!typing){tx.value=dShow(DNS.get.call(i));tx.classList.remove('bad')}}});
+ tx.value=dShow(cur);
+ function fire(){['input','change'].forEach(function(n){i.dispatchEvent(new Event(n,{bubbles:true}))})}
+ function setNative(v){if(DNS.get.call(i)!==v){typing=true;DNS.set.call(i,v);fire();typing=false}}
+ tx.addEventListener('input',function(e){
+  var sl=[],q=-1;while((q=tx.value.indexOf('/',q+1))>=0)sl.push(q);if(!/[^\d\/]/.test(tx.value)&&e.inputType&&e.inputType.indexOf('insert')==0&&sl.every(function(z){return z==2||z==5})){var g=tx.value.replace(/\D/g,'').slice(0,8),o=g.slice(0,2);if(g.length>2)o+='/'+g.slice(2,4);if(g.length>4)o+='/'+g.slice(4);tx.value=o}
+  var p=dParse(tx.value,true);tx.classList.remove('bad');
+  if(p)setNative(p);else if(DNS.get.call(i))setNative('');
+ });
+ tx.addEventListener('blur',function(){var t=tx.value.trim();if(!t){tx.classList.remove('bad');return}var p=dParse(t);if(p){tx.value=dShow(p);tx.classList.remove('bad');setNative(p)}else tx.classList.add('bad')});
+ tx.addEventListener('keydown',function(e){if(e.key=='Enter'){tx.blur()}});
+ i.addEventListener('change',function(){tx.value=dShow(DNS.get.call(i));tx.classList.remove('bad')});
+ i.addEventListener('click',function(){try{i.showPicker()}catch(e){}});
+})}
+wrapD(document);
+growAll();setTimeout(growAll,200);
+
+
+/* BMI */
+var BW=$("f_Weight_kg_"),BH=$("f_Height_cm_"),BB=$("f_BMI"),BHT=document.createElement("div");BHT.className="hint";BB.parentNode.appendChild(BHT);
+function bmiCat(){var v=parseFloat(BB.value);BHT.innerHTML=v>0?"<b>"+(v<18.5?"Underweight":v<25?"Normal weight":v<30?"Overweight":"Obese")+"</b> (WHO)":"Auto-calculated from weight and height"}
+function bmiCalc(){var w=parseFloat(BW.value),h=parseFloat(BH.value);
+ if(w>0&&h>30){BB.value=(w/Math.pow(h/100,2)).toFixed(1);BB.dataset.auto=1}else if(BB.dataset.auto){BB.value="";delete BB.dataset.auto}
+ bmiCat()}
+document.addEventListener("input",function(e){var t=e.target;if(t===BW||t===BH)bmiCalc();else if(t===BB){delete BB.dataset.auto;bmiCat()}});
+(function(){var w=parseFloat(BW.value),h=parseFloat(BH.value);if(w>0&&h>30&&BB.value==(w/Math.pow(h/100,2)).toFixed(1))BB.dataset.auto=1;bmiCat()})();
+
+/* spelling and grammar check */
+var MED=('splenectomy splenomegaly splenunculi splenunculus splenic splenorenal pancytopenia hypersplenism hematemesis haematemesis malena melena paracentesis variceal ligation fistula fistulae ISGPS NCPF noncirrhotic cirrhotic ascites laparotomy laparoscopic laparoscopy pancreatic pancreatitis amylase lipase tachycardia bradycardia procalcitonin ceruloplasmin fibroscan klebsiella pneumoniae haemophilus influenzae meningococcal pneumococcal mupirocin pantoprazole pentids pancrehenz limcee zincovit anastomosis anastomotic cholecystectomy appendicectomy appendectomy hemoglobin haemoglobin bilirubin albumin thrombocytopenia leukocytosis postoperative preoperative intraoperative perioperative colostomy ileostomy hemorrhoidectomy haemorrhoids hemorrhoids fistulotomy fissure sphincter peritonitis hepatic hepatectomy hepatocellular portal fibrosis varices gastric gastrectomy esophageal oesophageal endoscopy endoscopic colonoscopy sigmoidoscopy ultrasonography echocardiography cardiology hepatology gastroenterology nephrology antibiotic antibiotics analgesic analgesics colobag cefoperazone sulbactam piperacillin tazobactam imipenem meropenem amikacin gentamicin minocycline tigecycline cotrimoxazole triamoxazole ferritin transferrin hyperbilirubinemia hypoalbuminemia hyponatremia hypokalemia hypokalaemia sepsis septic ECOG ICD ORN HPE CECT triphasic nodular enhancing atrophied atrophic collaterals hilum adhesion adhesions drain drainage hernia herniorrhaphy mesh seroma hematoma haematoma abscess debridement necrosis necrotizing epigastric hypochondrium iliac lumbar umbilical laparotomy stoma varix portal hypertension thrombosis thrombus splenectomised postsplenectomy vaccination vaccinations pneumococcus meningococcus haemophilus hib antiseptic physiotherapy HbA1c MRCP cholangiopancreatography thyroid triglycerides cholesterol lipid urobilinogen epithelial hpf biopsy histopathology immunohistochemistry IHC').split(/\s+/),MS={};
+MED.forEach(function(w){MS[w.toLowerCase()]=1});
+var CD={},IG={},typo=null,tl=0,SPI=[];
+try{CD=JSON.parse(localStorage.getItem('dsm_dict')||'{}')}catch(e){}
+var SP=document.getElementById('sp');
+document.addEventListener('focusin',function(e){var t=e.target;if(t&&t.matches&&t.matches('textarea')){t.setAttribute('spellcheck','true');t.setAttribute('lang','en')}});
+function loadDict(cb){
+ if(tl==2){cb();return}
+ if(tl==1)return;tl=1;M.textContent='Loading dictionary…';
+ function done(){tl=2;M.textContent='';cb()}
+ var sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/typo-js@1.2.4/typo/typo.js';
+ sc.onload=function(){Promise.all(['aff','dic'].map(function(x){return fetch('https://cdn.jsdelivr.net/npm/dictionary-en@3.2.0/index.'+x).then(function(r){if(!r.ok)throw 0;return r.text()})})).then(function(a){try{typo=new Typo('en_US',a[0],a[1])}catch(e){typo=null}done()}).catch(done)};
+ sc.onerror=done;document.head.appendChild(sc);
+}
+function fieldList(){return [].slice.call(document.querySelectorAll('#form textarea')).filter(function(t){return !t.closest('[hidden]')&&t.value.trim()})}
+function fname(t){var f=t.closest('.fld'),l=f&&f.querySelector('label');if(l)return l.textContent.replace(' (one item per line)','');var n=t.parentNode.querySelector('.on');return n&&n.value?n.value:'Test description'}
+var GR=[
+ [/\b([A-Za-z]{2,})\s+\1\b/gi,'Repeated word',function(m){return [m[1]]}],
+ [/(\S)( {2,})(?=\S)/g,'Extra space',function(){return [' ']},1],
+ [/(\S)( +)(?=[,.;!?])/g,'Space before punctuation',function(){return ['']},1],
+ [/([a-z]{2})([.,;])(?=[A-Za-z]{2})/g,'Missing space after punctuation',function(m){return [m[2]+' ']},2],
+ [/(^|[.!?]\s+)([a-z])/g,'Sentence should start with a capital letter',function(m){return [m[1]+m[2].toUpperCase()]}],
+ [/\b(a)\s+(?!(?:one|once|user|uni\w*|use\w*|eu\w*)\b)([aeiou][a-z]+)/gi,'Use "an" before a vowel sound',function(m){return [(m[1]=='A'?'An':'an')+' '+m[2]]}],
+ [/\b(an)\s+(?!(?:hour|honest|heir|mri|mr|x|xray|sd)\b)([bcdfghjklmnpqrstvwxyz][a-z]+)/gi,'Use "a" before a consonant sound',function(m){return [(m[1]=='An'?'A':'a')+' '+m[2]]}],
+ [/\bi\b/g,'"I" should be a capital letter',function(){return ['I']}]
+];
+function scan(){
+ var out=[];
+ fieldList().forEach(function(t){
+  var v=t.value,m,re=/[A-Za-z][A-Za-z'’]*/g;
+  if(typo)while((m=re.exec(v))){
+   var w=m[0],a=m.index,pr=v.charAt(a-1),base=w.replace(/['’]s$/i,''),lw=base.toLowerCase(),nx=v.charAt(a+w.length);
+   if(base.length<3||/\d/.test(pr)||/\d/.test(nx)||base===base.toUpperCase()||/[a-z][A-Z]/.test(base)||MS[lw]||CD[lw])continue;
+   if(typo.check(base)||typo.check(lw)||typo.check(base.charAt(0).toUpperCase()+lw.slice(1)))continue;
+   out.push({el:t,s:a,e:a+base.length,w:base,k:'sp',msg:'Possible spelling mistake'});
+  }
+  GR.forEach(function(g){var r=new RegExp(g[0].source,g[0].flags),x;
+   while((x=r.exec(v))){
+    if(!x[0].length){r.lastIndex++;continue}
+    var pf=g[3]||0,wd=x[0].slice(pf),sg=g[2](x);if(sg[0]===wd)continue;
+    var s0=x.index+pf,e0=x.index+x[0].length;
+    if(g[1]=='Sentence should start with a capital letter'){s0=x.index;e0=s0+x[0].length}
+    out.push({el:t,s:s0,e:e0,w:wd,k:'gr',msg:g[1],sugg:sg});
+   }});
+ });
+ return out.filter(function(i){return !IG[i.k+'|'+i.w+'|'+i.el.value.slice(Math.max(0,i.s-15),i.e+15)]});
+}
+function esc2(x){return esc(x).replace(/ /g,'&nbsp;')}
+function review(){
+ SPI=scan();var n=SPI.length;
+ if(!n){SP.innerHTML='<div class="m">✓ No spelling or grammar problems found</div>'+(typo?'':'<div class="c">The online dictionary could not load, so only grammar checks ran. Your keyboard also underlines misspelled words; tap them for suggestions.</div>')+'<div class="b"><button type="button" class="p" data-a="x">Done</button></div>';SP.hidden=false;return}
+ var i=SPI[0],v=i.el.value,sg=i.sugg||[];
+ if(i.k=='sp'){try{sg=typo.suggest(i.w,5)||[]}catch(e){sg=[]}
+  if(i.w.charAt(0)!=i.w.charAt(0).toLowerCase())sg=sg.map(function(z){return z.charAt(0).toUpperCase()+z.slice(1)})}
+ i.sg=sg;
+ var f=i.el.closest('fieldset');if(f)f.classList.remove('cl');
+ i.el.scrollIntoView({block:'center',behavior:'smooth'});
+ var a0=Math.max(0,i.s-35),b0=Math.min(v.length,i.e+35);
+ SP.innerHTML='<div class="h"><span>'+esc(fname(i.el))+'</span><span>'+n+' to review</span></div><div class="m">'+i.msg+'</div>'
+ +'<div class="c">'+(a0?'…':'')+esc2(v.slice(a0,i.s))+'<mark>'+(esc2(v.slice(i.s,i.e))||'␣')+'</mark>'+esc2(v.slice(i.e,b0))+(b0<v.length?'…':'')+'</div>'
+ +'<div class="b">'+(sg.length?sg.map(function(z,k){return '<button type="button" class="p" data-a="r" data-k="'+k+'">'+(z===''?'Remove':esc(z))+'</button>'}).join(''):'<span style="font-size:13px;color:var(--mut)">No suggestions. Edit the text yourself, or ignore.</span>')+'</div>'
+ +'<div class="b"><button type="button" data-a="i">Ignore</button>'+(i.k=='sp'?'<button type="button" data-a="d">Add to dictionary</button>':'')+'<button type="button" class="q" data-a="x">Close</button></div>';
+ SP.hidden=false;
+}
+SP.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;var a=b.dataset.a,i=SPI[0];
+ if(a=='x'){SP.hidden=true;return}
+ if(!i)return;
+ if(a=='r'){var v=i.el.value,r=i.sg[+b.dataset.k];i.el.value=v.slice(0,i.s)+r+v.slice(i.e);i.el.dispatchEvent(new Event('input',{bubbles:true}))}
+ else if(a=='i'){IG[i.k+'|'+i.w+'|'+i.el.value.slice(Math.max(0,i.s-15),i.e+15)]=1}
+ else if(a=='d'){CD[i.w.toLowerCase()]=1;try{localStorage.setItem('dsm_dict',JSON.stringify(CD))}catch(x){}}
+ review();
+});
+document.getElementById('chk').onclick=function(){IG={};loadDict(review)};
+
+
+
+/* medicines: list + add/edit pop-up */
+var MP=$("mp"),MST={},MEI=-1;
+function medTxt(x){var f=x.f=='__o'?x.fc:(MAB[x.f]||x.f),q=x.q=='__c'?x.qc:x.q,sg=[x.d,q,x.t].filter(function(z){return z&&String(z).trim()}).join(' '),
+ du=x.du&&x.du[0]=='('?x.du.replace(/[()]/g,''):(x.dn?x.dn+' '+(x.dn=='1'?x.du.replace(/s$/,''):x.du):'');
+ return {a:((f?f+' ':'')+(x.n||'').trim()).trim(),b:[sg,du].filter(Boolean).join(', ')}}
+function renderMeds(){$("meds").innerHTML=MEDS.map(function(x,i){var m=medTxt(x);return '<div class="mi" data-i="'+i+'"><div class="no">'+(i+1)+'</div><div class="tx"><b>'+esc(m.a||'Medicine')+'</b>'+(m.b?' <span>– '+esc(m.b)+'</span>':'')+'</div><button type="button" class="x" data-del="'+i+'" aria-label="Remove">✕</button></div>'}).join('')}
+function mkMed(o){MEDS.push(o);renderMeds();return o}
+function getMeds(){return MEDS}
+function medHist(){try{return JSON.parse(localStorage.getItem('dsm_medhist')||'[]')}catch(e){return[]}}
+function medHistAdd(o){try{var h=medHist().filter(function(x){return x.n.toLowerCase()!=o.n.toLowerCase()});h.unshift(o);localStorage.setItem('dsm_medhist',JSON.stringify(h.slice(0,15)))}catch(e){}}
+function chG(k,list,lab){return '<div class="ch" data-k="'+k+'">'+list.map(function(v){return '<button type="button" data-v="'+esc(v)+'">'+esc(lab?lab(v):v)+'</button>'}).join('')+'</div>'}
+$("mp-b").innerHTML='<div id="mp-rw" hidden><label>Recent</label><div class="ch" id="mp-rec"></div></div>'
+ +'<label>Form</label>'+chG('f',FM.concat('__o'),function(v){return v=='__o'?'Other…':v})+'<input id="mp-fc" placeholder="Form" hidden>'
+ +'<label for="mp-n">Medicine name and strength</label><input id="mp-n" autocomplete="off" placeholder="e.g. Pantoprazole 40 mg">'
+ +'<label for="mp-d">Dose</label><input id="mp-d" placeholder="e.g. 1 tab">'
+ +'<label>Frequency</label>'+chG('q',FQ.concat('__c'),function(v){return v=='__c'?'Custom…':v})+'<input id="mp-qc" placeholder="Frequency" hidden style="margin-top:8px">'
+ +'<label>Timing <span style="font-weight:400">(optional)</span></label>'+chG('t',TM)
+ +'<label>Duration</label><div class="mp-du"><input id="mp-dn" inputmode="numeric" placeholder="No."><div style="flex:1">'+chG('du',DU,function(v){return v.replace(/[()]/g,'')})+'</div></div>';
+function mpSync(){
+ MP.querySelectorAll(".ch[data-k]").forEach(function(g){var k=g.dataset.k;g.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.dataset.v==MST[k])})});
+ $("mp-fc").hidden=MST.f!="__o";$("mp-qc").hidden=MST.q!="__c";$("mp-dn").hidden=MST.du[0]=="(";
+}
+function mpDose(){var d=$("mp-d"),nd=TOP[MST.f]?"Apply locally":(DD[MST.f]||"");if(d.value===""||d.value===MP.dataset.dd)d.value=nd;MP.dataset.dd=nd}
+function openMP(i){MEI=i;var o=i>=0?MEDS[i]:{};
+ MST={f:o.f||"Tab",q:o.q||"once daily",t:o.t||"",du:o.du||"days"};
+ $("mp-n").value=o.n||"";$("mp-fc").value=o.fc||"";$("mp-qc").value=o.qc||"";$("mp-dn").value=o.dn||"";$("mp-d").value=o.d||"";MP.dataset.dd="";
+ if(i<0)mpDose();
+ var h=medHist();
+ $("mp-rw").hidden=i>=0||!h.length;$("mp-rec").innerHTML=h.slice(0,8).map(function(x,j){return '<button type="button" data-r="'+j+'">'+esc(x.n)+'</button>'}).join("");
+ $("mp-t").textContent=i>=0?"Edit medicine":"Add medicine";$("mp-more").hidden=i>=0;
+ mpSync();MP.hidden=false;document.body.style.overflow="hidden";
+}
+function closeMP(){cbClose();MP.hidden=true;document.body.style.overflow=""}
+function saveMP(more){var n=$("mp-n").value.trim();if(!n){$("mp-n").focus();return}
+ var o={f:MST.f,fc:$("mp-fc").value.trim(),n:n,d:$("mp-d").value.trim(),q:MST.q,qc:$("mp-qc").value.trim(),t:MST.t,dn:MST.du[0]=="("?"":$("mp-dn").value.trim(),du:MST.du};
+ if(MEI>=0)MEDS[MEI]=o;else MEDS.push(o);
+ medHistAdd(o);renderMeds();save();
+ if(more){openMP(-1);$("mp-t").textContent="Added ✓  Add next medicine";$("mp-b").scrollTop=0;$("mp-n").focus()}else closeMP();
+}
+MP.addEventListener("click",function(e){
+ var b=e.target.closest(".ch button");if(!b)return;
+ if(b.dataset.r!=null){var o=medHist()[+b.dataset.r];if(!o)return;MST={f:o.f,q:o.q,t:o.t,du:o.du};$("mp-n").value=o.n;$("mp-fc").value=o.fc||"";$("mp-qc").value=o.qc||"";$("mp-dn").value=o.dn||"";$("mp-d").value=o.d||"";mpSync();return}
+ var k=b.parentNode.dataset.k,v=b.dataset.v;if(!k)return;
+ if(k=="t"&&MST.t==v)MST.t="";else MST[k]=v;
+ if(k=="f")mpDose();mpSync();
+});
+$("mp-n")._sg={custom:0,keep:0,hi:0,flat:0,items:function(){var seen={},out=[];medHist().forEach(function(x){var kk=x.n.toLowerCase();if(!seen[kk]){seen[kk]=1;out.push(mkIt(x.n,"Used before","__med"))}});
+  DRUGS.forEach(function(d){var kk=d[0].toLowerCase();if(!seen[kk]){seen[kk]=1;var it=mkIt(d[0],d[2]);it.f=d[1];out.push(it)}});return out},
+ pick:function(it,e){e.value=it.l;if(it.f){MST.f=it.f;mpDose();mpSync()}}};
+$("mp-x").onclick=closeMP;MP.querySelector(".ia-bg").onclick=closeMP;
+$("mp-save").onclick=function(){saveMP(false)};$("mp-more").onclick=function(){saveMP(true)};
+$("addmed").onclick=function(){openMP(-1)};
+document.addEventListener("keydown",function(e){if(e.key=="Escape"&&!MP.hidden){var c=document.getElementById("cbp");if(c&&c.offsetHeight>0)return;e.preventDefault();closeMP()}});
+$("meds").addEventListener("click",function(e){var d=e.target.closest("[data-del]");if(d){MEDS.splice(+d.dataset.del,1);renderMeds();save();return}var m=e.target.closest(".mi");if(m)openMP(+m.dataset.i)});
+
+/* print */
+var PB=document.createElement('div');PB.id='printbox';document.body.appendChild(PB);
+function fillPrint(){try{PB.innerHTML=build();}catch(e){}}
+window.addEventListener('beforeprint',fillPrint);
+
+/* ===== Real .docx writer ===== */
+var DSM_CT='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+function crc32(b){var t=crc32.t;if(!t){t=crc32.t=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}var r=-1;for(var i=0;i<b.length;i++)r=t[(r^b[i])&255]^(r>>>8);return(r^-1)>>>0}
+function zipStore(files){var enc=new TextEncoder(),parts=[],cd=[],off=0;
+ function u16(v){return [v&255,v>>8&255]}function u32(v){return [v&255,v>>8&255,v>>16&255,v>>>24&255]}
+ files.forEach(function(f){var nm=enc.encode(f[0]),d=enc.encode(f[1]),c=crc32(d);
+  var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(c),u32(d.length),u32(d.length),u16(nm.length),u16(0));
+  parts.push(new Uint8Array(lh),nm,d);
+  cd.push(new Uint8Array([].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(c),u32(d.length),u32(d.length),u16(nm.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off))),nm);
+  off+=lh.length+nm.length+d.length});
+ var cdl=0;cd.forEach(function(x){cdl+=x.length});
+ var end=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cdl),u32(off),u16(0)));
+ return new Blob(parts.concat(cd,[end]),{type:DSM_CT})}
+function xe(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function docxBody(html){
+ var root=new DOMParser().parseFromString('<body>'+html+'</body>','text/html').body;
+ function pt(v,d){var m=String(v||'').match(/(-?[\d.]+)(pt|px)?/);return m?(m[2]=='px'?parseFloat(m[1])*.75:parseFloat(m[1])):d}
+ function sty(e){var o={};(e.getAttribute&&e.getAttribute('style')||'').split(';').forEach(function(x){var i=x.indexOf(':');if(i>0)o[x.slice(0,i).trim().toLowerCase()]=x.slice(i+1).trim()});return o}
+ function hex(c){c=(c||'').trim();var m=c.match(/^#([0-9a-f]{6})$/i);if(m)return m[1].toUpperCase();m=c.match(/^#([0-9a-f]{3})$/i);if(m)return m[1].replace(/./g,'$&$&').toUpperCase();m=c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);if(m)return[1,2,3].map(function(i){return('0'+(+m[i]).toString(16)).slice(-2)}).join('').toUpperCase();return''}
+ function margins(s){var m=(s.margin||'').trim().split(/\s+/).map(function(x){return pt(x,0)}),t=0,r=0,b=0,l=0;if(m.length==1)t=r=b=l=m[0];else if(m.length==2){t=b=m[0];r=l=m[1]}else if(m.length==3){t=m[0];r=l=m[1];b=m[2]}else if(m.length==4){t=m[0];r=m[1];b=m[2];l=m[3]}
+  if(s['margin-top']!=null)t=pt(s['margin-top'],0);if(s['margin-bottom']!=null)b=pt(s['margin-bottom'],0);if(s['margin-left']!=null)l=pt(s['margin-left'],0);return{t:t,b:b,l:l}}
+ function runs(n,st,out){
+  if(n.nodeType==3){var t=n.nodeValue.replace(/[\r\n\t]+/g,' ');if(!t)return;out.push('<w:r>'+rpr(st)+'<w:t xml:space="preserve">'+xe(t)+'</w:t></w:r>');return}
+  if(n.nodeType!=1)return;var tg=n.tagName.toLowerCase();
+  if(tg=='br'){out.push('<w:r><w:br/></w:r>');return}
+  var s2=Object.assign({},st),s=sty(n);
+  if(tg=='b'||tg=='strong'||/bold|[6-9]00/.test(s['font-weight']||''))s2.b=1;
+  if(tg=='i'||tg=='em'||/italic/.test(s['font-style']||''))s2.i=1;
+  if(tg=='u'||/underline/.test(s['text-decoration']||''))s2.u=1;
+  if(s.color&&hex(s.color))s2.c=hex(s.color);
+  if(s['font-size'])s2.sz=Math.round(pt(s['font-size'],11)*2);
+  for(var c=n.firstChild;c;c=c.nextSibling)runs(c,s2,out)}
+ function rpr(st){return '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+(st.b?'<w:b/>':'')+(st.i?'<w:i/>':'')+(st.c?'<w:color w:val="'+st.c+'"/>':'')+'<w:sz w:val="'+(st.sz||22)+'"/>'+(st.u?'<w:u w:val="single"/>':'')+'</w:rPr>'}
+ function para(n,st0){var s=sty(n),mg=margins(s),st=Object.assign({},st0);
+  if(s['font-size'])st.sz=Math.round(pt(s['font-size'],11)*2);if(s['font-weight']&&/bold|[6-9]00/.test(s['font-weight']))st.b=1;if(s['text-decoration']&&/underline/.test(s['text-decoration']))st.u=1;if(s.color&&hex(s.color))st.c=hex(s.color);
+  var ind=pt(s['text-indent'],0),jc=(s['text-align']||'').toLowerCase(),
+  pp='<w:pPr>'+(/avoid/.test(s['page-break-after']||'')?'<w:keepNext/>':'')+'<w:spacing w:before="'+Math.round(mg.t*20)+'" w:after="'+Math.round(mg.b*20)+'" w:line="'+Math.round(240*(parseFloat(s['line-height'])||1.15))+'" w:lineRule="auto"/>'+(mg.l||ind?'<w:ind w:left="'+Math.round(mg.l*20)+'"'+(ind<0?' w:hanging="'+Math.round(-ind*20)+'"':ind>0?' w:firstLine="'+Math.round(ind*20)+'"':'')+'/>':'')+(jc=='center'?'<w:jc w:val="center"/>':jc=='right'?'<w:jc w:val="right"/>':'')+'</w:pPr>',
+  out=[];for(var c=n.firstChild;c;c=c.nextSibling)runs(c,st,out);return '<w:p>'+pp+out.join('')+'</w:p>'}
+ function table(n){var rows=[];[].forEach.call(n.querySelectorAll('tr'),function(tr){var cells=[].filter.call(tr.children,function(c){return /^t[dh]$/i.test(c.tagName)}),w=Math.floor(5000/Math.max(1,cells.length));
+  rows.push('<w:tr><w:trPr><w:cantSplit/></w:trPr>'+cells.map(function(td){var s=sty(td),bg=hex(s.background||s['background-color']),st={};if(s.color&&hex(s.color))st.c=hex(s.color);if(/bold/.test(s['font-weight']||''))st.b=1;
+   st.sz=Math.round(pt(sty(n)['font-size'],10.5)*2);
+   var inner=blocks(td,st);if(!inner)inner='<w:p/>';
+   return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="pct"/>'+(bg?'<w:shd w:val="clear" w:color="auto" w:fill="'+bg+'"/>':'')+'</w:tcPr>'+inner+'</w:tc>'}).join('')+'</w:tr>')});
+  var B='<w:{k} w:val="single" w:sz="4" w:space="0" w:color="808080"/>';
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(function(k){return B.replace('{k}',k)}).join('')+'</w:tblBorders><w:tblCellMar><w:top w:w="40" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr>'+rows.join('')+'</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr></w:p>'}
+ function blocks(el,st){var out=[],buf=[];
+  function flush(){if(buf.length){var tmp=document.createElement('p');buf.forEach(function(x){tmp.appendChild(x.cloneNode(true))});if(tmp.textContent.trim()||tmp.querySelector('br'))out.push(para(tmp,st));buf=[]}}
+  for(var c=el.firstChild;c;c=c.nextSibling){
+   if(c.nodeType==1){var tg=c.tagName.toLowerCase();
+    if(tg=='p'){flush();out.push(para(c,st))}
+    else if(tg=='div'){flush();out.push(blocks(c,st))}
+    else if(tg=='table'){flush();out.push(table(c))}
+    else if(tg=='hr'){flush();out.push('<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="8" w:space="1" w:color="000000"/></w:pBdr><w:spacing w:before="60" w:after="120"/></w:pPr></w:p>')}
+    else buf.push(c)}
+   else if(c.nodeType==3)buf.push(c)}
+  flush();return out.join('')}
+ return blocks(root.firstElementChild&&root.children.length==1&&root.firstElementChild.tagName=='DIV'?root.firstElementChild:root,{})}
+function buildDocx(){
+ var tmp=document.createElement('div');tmp.innerHTML=build();var hd=tmp.querySelector('[data-hdr]'),hdrX=hd?docxBody(hd.outerHTML):'';if(hd)hd.remove();var body=docxBody(tmp.innerHTML),pl=dsmPayload(),chunks=[];for(var i=0;i<pl.length;i+=240)chunks.push(pl.slice(i,i+240));
+ var NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
+ doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document '+NS+'><w:body>'+body+'<w:sectPr><w:headerReference w:type="first" r:id="rId2"/><w:footerReference w:type="default" r:id="rId3"/><w:footerReference w:type="first" r:id="rId3"/><w:titlePg/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1000" w:right="1000" w:bottom="1000" w:left="1000" w:header="500" w:footer="500" w:gutter="0"/></w:sectPr></w:body></w:document>',
+ sty='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles '+NS+'><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="22"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>',
+ cust='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">'+chunks.map(function(c,i){return '<property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="'+(i+2)+'" name="dsm'+('00000'+i).slice(-5)+'"><vt:lpwstr>'+c+'</vt:lpwstr></property>'}).join('')+'</Properties>',
+ R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+ return zipStore([
+  ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/custom.xml" ContentType="application/vnd.openxmlformats-officedocument.custom-properties+xml"/></Types>'],
+  ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+R+'/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="'+R+'/custom-properties" Target="docProps/custom.xml"/></Relationships>'],
+  ['word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+R+'/styles" Target="styles.xml"/><Relationship Id="rId2" Type="'+R+'/header" Target="header1.xml"/><Relationship Id="rId3" Type="'+R+'/footer" Target="footer1.xml"/></Relationships>'],
+  ['word/document.xml',doc],['word/header1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:hdr '+NS+'>'+(hdrX||'<w:p/>')+'</w:hdr>'],['word/footer1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr '+NS+'><w:p><w:pPr><w:jc w:val="center"/></w:pPr>'+['Page ','PAGE',' of ','NUMPAGES'].map(function(x,i){var rp='<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="18"/></w:rPr>';return i%2==0?'<w:r>'+rp+'<w:t xml:space="preserve">'+x+'</w:t></w:r>':'<w:r>'+rp+'<w:fldChar w:fldCharType="begin"/></w:r><w:r>'+rp+'<w:instrText xml:space="preserve"> '+x+' </w:instrText></w:r><w:r>'+rp+'<w:fldChar w:fldCharType="separate"/></w:r><w:r>'+rp+'<w:t>1</w:t></w:r><w:r>'+rp+'<w:fldChar w:fldCharType="end"/></w:r>'}).join('')+'</w:p></w:ftr>'],['word/styles.xml',sty],['docProps/custom.xml',cust]])}
+
+function dsmPayload(){try{save();var j=localStorage.getItem('dsm2')||'{}';return btoa(unescape(encodeURIComponent(j)))}catch(e){return ''}}
+function docHTML(word){var body=build(),pl=word?dsmPayload():'',nm=(val('Name')||'Discharge Summary').replace(/[<>&]/g,'');
+ var head='<meta charset="utf-8"><title>Discharge Summary - '+nm+'</title>';
+ if(word)return '<!--DSMDATA:'+pl+':END--><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head>'+head+'<meta name="dsm-data" content="'+pl+'"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]--><style>@page WordSection1{size:21.0cm 29.7cm;margin:16mm 16mm 18mm 18mm;mso-page-orientation:portrait}div.WordSection1{page:WordSection1}body{font-family:Arial,Helvetica,sans-serif;font-size:11pt}p{margin:0}</style></head><body><div class="WordSection1">'+body+'</div></body></html>';
+ var css='@page{size:A4;margin:0}html,body{margin:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}p{orphans:3;widows:3}#src{display:none}.pg{box-sizing:border-box;width:210mm;height:295mm;padding:16mm 16mm 20mm 18mm;position:relative;overflow:hidden;page-break-after:always;break-after:page}.pg:last-child{page-break-after:auto;break-after:auto}.pg .ft{position:absolute;left:0;right:0;bottom:9mm;text-align:center;font:9pt Arial,Helvetica,sans-serif}',
+ js="(function(){var src=document.getElementById('src'),nodes=[].slice.call(src.firstElementChild.children),wrap=src.firstElementChild,pages=[],cur=null,lim=0;"
+ +"function np(){var p=document.createElement('div');p.className='pg';var c=document.createElement('div');c.style.cssText=wrap.getAttribute('style')||'';p.appendChild(c);p.c=c;document.body.appendChild(p);pages.push(p);cur=p;lim=p.clientHeight-p.c.getBoundingClientRect().top+p.getBoundingClientRect().top-parseFloat(getComputedStyle(p).paddingBottom)}"
+ +"function over(){return cur.c.getBoundingClientRect().bottom-cur.getBoundingClientRect().top>cur.clientHeight-parseFloat(getComputedStyle(cur).paddingBottom)+.5}"
+ +"function kn(n){var s=n.getAttribute&&n.getAttribute('style')||'';return /page-break-after:avoid/.test(s)||(/font-size:9pt/.test(s)&&/&nbsp;|\\u00a0/.test(n.innerHTML+n.textContent))}"
+ +"function fit(l){var w=l.textContent.split(/\\s+/).filter(Boolean);if(l.children.length||w.length<2||l.tagName!='P')return;var lo=0,hi=w.length;while(lo<hi){var m=(lo+hi+1)>>1;l.textContent=w.slice(0,m).join(' ');if(over())hi=m-1;else lo=m}if(lo==0){l.textContent=w.join(' ');return}l.textContent=w.slice(0,lo).join(' ');if(lo==w.length)return;var r=l.cloneNode(false);r.textContent=w.slice(lo).join(' ');np();cur.c.appendChild(r);if(over())fit(r)}"
+ +"np();nodes.forEach(function(n){cur.c.appendChild(n);if(over()&&cur.c.children.length>1){var mv=[n];cur.c.removeChild(n);while(cur.c.children.length>1&&kn(cur.c.lastElementChild)){mv.unshift(cur.c.lastElementChild);cur.c.removeChild(cur.c.lastElementChild)}np();mv.forEach(function(x){cur.c.appendChild(x)})}if(over())fit(cur.c.lastElementChild)});"
+ +"var N=pages.length;pages.forEach(function(p,i){var f=document.createElement('div');f.className='ft';f.textContent='Page '+(i+1)+' of '+N;p.appendChild(f)})})();"
+ return '<!doctype html><html><head>'+head+'<style>'+css+'</style></head><body><div id="src">'+body+'</div><script>'+js+'<\/script></body></html>'}
+function fname(){var n=(val('Name')||'Patient').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,' ')||'Patient',d=new Date().toISOString().slice(0,10);return 'Discharge Summary - '+n+' - '+d+'.docx'}
+document.getElementById('prt').onclick=function(){var m=document.getElementById('msg');
+ if(!val('Name')&&!val('Diagnosis')){m.textContent='Fill in the summary before printing.';return}
+ function fallback(){fillPrint();try{window.print();m.textContent='Choose your printer, or Save as PDF. Set paper to A4.'}catch(e){m.textContent='Printing is blocked here. Use Save Word, then print from Word.'}}
+ try{var fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';document.body.appendChild(fr);
+  var d=fr.contentWindow.document;d.open();d.write(docHTML(false));d.close();
+  var go=function(){try{fr.contentWindow.focus();fr.contentWindow.print();m.textContent='Choose your printer, or Save as PDF. Set paper to A4.'}catch(e){fallback()}setTimeout(function(){fr.remove()},60000)};
+  if(d.readyState=='complete')setTimeout(go,150);else fr.onload=function(){setTimeout(go,150)};
+ }catch(e){fallback()}};
+document.getElementById('word').onclick=function(){var m=document.getElementById('msg');
+ if(!val('Name')&&!val('Diagnosis')){m.textContent='Fill in the summary before saving.';return}
+ var name=fname(),blob;try{blob=buildDocx()}catch(e){m.textContent='Could not build the Word file: '+e.message;return}
+ function dl(){var a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(u)},4000);m.textContent='Saved "'+name+'". Open it in Word.'}
+ try{var file=new File([blob],name,{type:DSM_CT});
+  if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:name}).then(function(){m.textContent='Word file ready: '+name},function(e){if(e&&e.name!='AbortError')dl()});return}
+ }catch(e){}
+ try{dl()}catch(e){m.textContent='Saving is blocked here. Use Copy for Word instead.'}};
+
+
+/* touch + keyboard polish */
+(function(){
+ var leg=function(){return [].filter.call(document.querySelectorAll('#form legend'),function(l){return l.parentNode.offsetParent!==null||l.offsetParent!==null})};
+ document.querySelectorAll('#form legend').forEach(function(l){l.tabIndex=0;l.setAttribute('role','button');l.setAttribute('aria-expanded','true')});
+ function sync(){document.querySelectorAll('#form fieldset').forEach(function(f){var l=f.querySelector('legend');if(l)l.setAttribute('aria-expanded',f.classList.contains('cl')?'false':'true')})}
+ ['colA','expA'].forEach(function(i){var b=document.getElementById(i);if(b)b.addEventListener('click',function(){setTimeout(sync)})});
+ document.getElementById('form').addEventListener('click',function(){setTimeout(sync)});
+ document.querySelectorAll('#form .fld input[type=text],#form .fld input:not([type])').forEach(function(i){i.setAttribute('enterkeyhint','next')});
+ function nextField(t){var all=[].filter.call(document.querySelectorAll('#form input:not([type=hidden]):not([type=checkbox]):not([type=date]):not(.qs):not(.es),#form textarea,#form select'),function(x){return x.offsetParent!==null&&!x.disabled});
+  var i=all.indexOf(t);return i>=0?all[i+1]:null}
+ document.addEventListener('keydown',function(e){
+  var t=e.target,mod=e.ctrlKey||e.metaKey,k=e.key;
+  if(t.tagName=='LEGEND'&&(k=='Enter'||k==' ')){e.preventDefault();t.parentNode.classList.toggle('cl');sync();return}
+  if(mod&&k=='Enter'){e.preventDefault();document.getElementById('copy').click();return}
+  if(mod&&!e.shiftKey&&!e.altKey&&(k=='p'||k=='P')){e.preventDefault();document.getElementById('prt').click();return}
+  if(e.altKey&&!mod&&e.code=='KeyV'){e.preventDefault();document.getElementById('show').click();return}
+  if(e.altKey&&!mod&&e.code=='KeyW'){e.preventDefault();document.getElementById('word').click();return}
+  if(e.altKey&&!mod&&e.code=='KeyS'){e.preventDefault();document.getElementById('chk').click();return}
+  if(e.altKey&&!mod&&(k=='ArrowDown'||k=='ArrowUp')){var L=leg();if(!L.length)return;var cur=t.closest&&t.closest('fieldset'),i=cur?L.indexOf(cur.querySelector('legend')):-1;
+   var n=k=='ArrowDown'?Math.min(L.length-1,i+1):Math.max(0,i<0?0:i-1);e.preventDefault();L[n].focus();L[n].scrollIntoView({block:'start',behavior:'smooth'});return}
+  if(k=='Enter'&&!mod&&!e.shiftKey&&!e.altKey&&!e.isComposing&&t.tagName=='INPUT'&&(t.type=='text'||t.type=='number'||t.type=='tel')&&!t._sg&&!t.closest('.eb,.dm,#mp,#sp')&&t.closest('#form')){
+   var n2=nextField(t);if(n2){e.preventDefault();n2.focus();if(n2.select&&n2.tagName=='INPUT')try{n2.select()}catch(x){}}}
+ });
+ sync();
+})();
+
+/* section navigator + done marks */
+(function(){
+ var nav=document.getElementById('nav'),FS=function(){return [].filter.call(document.querySelectorAll('#form fieldset'),function(f){return !f.hidden&&f.querySelector('legend')})};
+ function short(t){return t.replace(/laboratory investigations/i,'labs').replace(/investigations/i,'inv.').replace(/Management and procedure/i,'Management').replace(/ details$/i,'')}
+ var btns=[],sig='';
+ function rebuild(){var ff=FS(),sg=ff.map(function(f){return f.querySelector('legend').textContent}).join('|');if(sg==sig)return;sig=sg;nav.innerHTML='';btns=[];FS().forEach(function(f,i){var l=f.querySelector('legend'),b=document.createElement('button');b.type='button';b.innerHTML='<b>'+(i+1)+'</b>'+short(l.firstChild?l.firstChild.textContent:l.textContent);
+  b.onclick=function(){var l=f.querySelector('legend');f.classList.remove('cl');l.setAttribute('aria-expanded','true');var y=f.getBoundingClientRect().top+window.scrollY-60;window.scrollTo({top:y,behavior:'smooth'})};nav.appendChild(b);btns.push([f,b])})}
+ function filled(f){if(f.querySelector('.row'))return true;var els=f.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=date]):not(.qs):not(.es):not(.en):not(.ed):not(.dt),textarea,select');
+  for(var i=0;i<els.length;i++){if(els[i].closest('.eb'))continue;if(els[i].value&&els[i].value.trim())return true}return false}
+ function marks(){btns.forEach(function(p){var f=p[0],ok=filled(f);f.classList.toggle('ok',ok);p[1].classList.toggle('ok',ok);var l=f.querySelector('legend'),d=l.querySelector('.dn');if(!d){d=document.createElement('i');d.className='dn';d.style.fontStyle='normal';d.textContent='✓ Done';l.insertBefore(d,null)}})}
+ function active(){var cur=0;btns.forEach(function(p,i){if(p[0].getBoundingClientRect().top<110)cur=i});btns.forEach(function(p,i){var on=i==cur;if(p[1].classList.contains('on')!==on){p[1].classList.toggle('on',on);if(on){var n=nav,b=p[1];n.scrollTo({left:b.offsetLeft-n.clientWidth/2+b.clientWidth/2,behavior:'smooth'})}}});nav.classList.toggle('st',window.scrollY>60)}
+ var t1,t2,raf;
+ rebuild();marks();active();
+ document.addEventListener('input',function(){clearTimeout(t1);t1=setTimeout(marks,250)});
+ document.addEventListener('change',function(){clearTimeout(t1);t1=setTimeout(function(){rebuild();marks();active()},250)});
+ document.addEventListener('click',function(){clearTimeout(t2);t2=setTimeout(function(){rebuild();marks();active()},300)});
+ window.addEventListener('scroll',function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;active()})},{passive:true});
+ setTimeout(function(){rebuild();marks();active()},400);
+})();
+
+/* colour-code sections */
+(function(){document.querySelectorAll('#form fieldset').forEach(function(f){var l=f.querySelector('legend');if(!l)return;var t=l.textContent;
+ f.dataset.c=/invest|imaging|histo/i.test(t)?'i':/advice|follow|condition|hospital course|consult/i.test(t)?'d':/sign/i.test(t)?'s':/transfus|vaccin/i.test(t)?'x':'c'})})();
+
+document.getElementById('clrH').onclick=function(){var b=this;if(!b.dataset.arm){b.dataset.arm=1;b.textContent='Tap again to confirm';b.style.color='var(--danger)';setTimeout(function(){delete b.dataset.arm;b.textContent='Forget remembered entries';b.style.color=''},3500);return}
+ delete b.dataset.arm;HS={};hsSave();try{localStorage.setItem('dsm_medhist','[]')}catch(e){}b.textContent='Forgotten \u2713';b.style.color='';setTimeout(function(){b.textContent='Forget remembered entries'},1800);cbClose&&cbClose()};
+
+/* ===== Load a saved summary back into the page ===== */
+(function(){
+ var btn=document.getElementById('ldb'),inp=document.getElementById('ldf'),M=document.getElementById('msg');
+ function say(t){M.textContent=t}
+ function iso(x){var m=String(x||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2):''}
+ function strip(l){return l.replace(/^\s*(\d+[\.\)]|[•\-\*])\s*/,'').trim()}
+ function apply(d,note){try{var old=localStorage.getItem('dsm2');if(old)localStorage.setItem('dsm2_bak',old);localStorage.setItem('dsm2',JSON.stringify(d))}catch(e){say('Could not store the loaded data in this browser.');return}
+  say(note+' Refreshing…');setTimeout(function(){location.reload()},500)}
+ function parseText(txt,arr){
+  var doc=new DOMParser().parseFromString(txt,'text/html'),ps=[].map.call(doc.querySelectorAll('p,li'),function(p){return p.textContent.replace(/ /g,' ').replace(/[ \t]+/g,' ').trim()}).filter(Boolean);if(arr)ps=arr.slice();var si=ps.findIndex(function(t){return /^Consultant\s+Resident/i.test(t)});if(si>=0)ps=ps.slice(0,si);
+  var MAP={'DIAGNOSIS':'Diagnosis','CO-MORBIDITIES':'Co-morbidities','PRE-OPERATIVE VACCINATION':'Pre-operative vaccination status','POSTOPERATIVE COMPLICATIONS':'Complications','COMPLICATIONS':'Complications','PLAN AFTER DISCHARGE':'Plan','PLAN':'Plan','HISTORY OF PRESENTING ILLNESS':'History of presenting illness','COURSE IN HOSPITAL':'Course during hospital stay','CONDITION AT DISCHARGE':'Condition at discharge','BLOOD TRANSFUSION':'Blood transfusion details','CONSULTATIONS AND REFERRALS':'Consultations and referrals','CONSERVATIVE / MEDICAL MANAGEMENT':'Conservative / medical management details'},
+  SPECIAL={'PROCEDURE':1,'INTRAOPERATIVE FINDINGS':1,'INTRAOPERATIVE COMPLICATIONS':1,'ADVICE ON DISCHARGE':1,'INVESTIGATIONS':1,'IMAGING':1,'HISTOPATHOLOGY':1,'TREATMENT AT DISCHARGE':1},
+  sec=null,S={},head=[];
+  ps.forEach(function(t){var u=t.toUpperCase();if(t===u&&(MAP[u]||SPECIAL[u])){sec=u;S[sec]=S[sec]||[];return}if(sec)S[sec].push(t);else head.push(t)});
+  var d={},got=[],H=head.join('  ');
+  function f(l,v){if(v){d[id(l)]=v;got.push(l)}}
+  var m;
+  if(m=H.match(/Name\s*:?\s*([A-Z][A-Z .'\-]{1,60}?)(?=\s+(?:Hospital|MRD|IRN|Blood|Weight|Height|BMI|C\/O|Consultant|Admitted|Discharged|Age|PS)\b|\s{2,}|$)/))f('Name',m[1].trim().toLowerCase().replace(/\b[a-z]/g,function(c){return c.toUpperCase()}));
+  if(m=H.match(/Age\/Sex\s*:?\s*(\d+)\s*Y?\s*\/?\s*(Male|Female|Other)?/i)){f('Age',m[1]);if(m[2])f('Sex',m[2][0].toUpperCase()+m[2].slice(1).toLowerCase())}
+  if(m=H.match(/Admitted\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/))f('Date of admission',iso(m[1]));
+  if(m=H.match(/Discharged\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4})/))f('Date of discharge',iso(m[1]));
+  if(m=H.match(/Hospital no\s*:?\s*([\w\/\-]+)/i))f('Hospital No',m[1]);
+  if(m=H.match(/MRD no\s*:?\s*([\w\/\-]+)/i))f('MRD No',m[1]);
+  if(m=H.match(/\bIRN\s*:?\s*([\w\/\-]+)/))f('IRN',m[1]);
+  if(m=H.match(/Blood group\s*:?\s*((?:A|B|AB|O)\s?[+\-])/i))f('Blood group',m[1].replace(/\s/g,''));
+  if(m=H.match(/Weight\s*:?\s*([\d.]+)/i))f('Weight (kg)',m[1]);
+  if(m=H.match(/Height\s*:?\s*([\d.]+)/i))f('Height (cm)',m[1]);
+  Object.keys(MAP).forEach(function(k){if(S[k]){var lines=S[k].map(strip).filter(Boolean);if(lines.length){d[id(MAP[k])]=lines.join('\n');got.push(MAP[k]);if(k=='PRE-OPERATIVE VACCINATION')d['opt_vacc']=true;if(k=='BLOOD TRANSFUSION')d['opt_bt']=true;if(k=='CONDITION AT DISCHARGE')d['opt_cond']=true;if(k=='CONSULTATIONS AND REFERRALS')d['opt_cons']=true}}});
+  if(S['CONSERVATIVE / MEDICAL MANAGEMENT'])d[id('Type of management')]='Conservative / medical';
+  var procs=[];(S['PROCEDURE']||[]).forEach(function(t){t=strip(t);var q=t.match(/^(.*?)(?:\s+performed(?:\s+under\s+(.+?))?(?:\s+on\s+(\d{1,2}\/\d{1,2}\/\d{4}))?)?(?:\s+ORN\s*:\s*(.+))?$/i);if(!q||!q[1])return;
+   var an=q[2]||'',a=an,ao='';if(an){var hit=ANA.filter(function(x){return x.toLowerCase()==an.toLowerCase()})[0];if(hit)a=hit;else{a='Other';ao=an}}
+   procs.push({n:q[1].trim(),d:iso(q[3]),a:a,ao:ao,o:(q[4]||'').trim(),f:'',c:''})});
+  function perProc(key,prop){var L=S[key];if(!L||!procs.length)return;var cur=procs.length==1?0:-1,buf={};
+   L.forEach(function(t){var h=t.match(/^In\s+(.+?)\s+-\s*$/);if(h){cur=-1;procs.forEach(function(p,i){if(p.n.toLowerCase()==h[1].trim().toLowerCase())cur=i});return}if(cur>=0)(buf[cur]=buf[cur]||[]).push(strip(t))});
+   Object.keys(buf).forEach(function(i){procs[i][prop]=buf[i].join('\n')})}
+  perProc('INTRAOPERATIVE FINDINGS','f');perProc('INTRAOPERATIVE COMPLICATIONS','c');
+  if(procs.length){d.__procs=procs;d[id('Type of management')]='Surgical';got.push('Procedures')}
+  var A=S['ADVICE ON DISCHARGE']||[],wi=A.findIndex(function(t){return /^Return to the emergency/i.test(t)}),adv=wi>=0?A.slice(0,wi):A.filter(function(t){return !/^Emergency contact/i.test(t)});
+  if(wi>=0){var wl=A.slice(wi+1).filter(function(t){return !/^Emergency contact/i.test(t)}).map(strip);if(wl.length){d[id('Warning signs: return to emergency if')]=wl.join('\n');got.push('Warning signs')}}
+  adv=adv.map(strip).filter(Boolean);if(adv.length){d[id('Advice at discharge')]=adv.join('\n');got.push('Advice')}
+  return {d:d,got:got}}
+ function inflate(src){var pos=0,bt=0,cn=0,out=[];
+ function bits(n){var v=0;for(var i=0;i<n;i++){if(!cn){bt=src[pos++];cn=8}v|=(bt&1)<<i;bt>>=1;cn--}return v}
+ function mk(len){var c=[],o=[],i,sy=[];for(i=0;i<16;i++)c[i]=0;len.forEach(function(l){c[l]++});c[0]=0;o[1]=0;for(i=1;i<15;i++)o[i+1]=o[i]+c[i];len.forEach(function(l,s){if(l)sy[o[l]++]=s});return{c:c,s:sy}}
+ function dec(h){var code=0,first=0,idx=0;for(var l=1;l<16;l++){code|=bits(1);var ct=h.c[l];if(code-ct<first)return h.s[idx+(code-first)];idx+=ct;first+=ct;first<<=1;code<<=1}throw new Error('bad code')}
+ var LB=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258],LE=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0],DB=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577],DE=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+ function codes(lh,dh){for(;;){var s=dec(lh);if(s<256)out.push(s);else if(s==256)return;else{s-=257;var l=LB[s]+bits(LE[s]),d=dec(dh),dist=DB[d]+bits(DE[d]);for(var i=0;i<l;i++)out.push(out[out.length-dist])}}}
+ var last;do{last=bits(1);var t=bits(2);
+  if(t==0){cn=0;var n=src[pos]|(src[pos+1]<<8);pos+=4;for(var i=0;i<n;i++)out.push(src[pos++])}
+  else if(t==1){var a=[],i;for(i=0;i<144;i++)a.push(8);for(;i<256;i++)a.push(9);for(;i<280;i++)a.push(7);for(;i<288;i++)a.push(8);var b=[];for(i=0;i<30;i++)b.push(5);codes(mk(a),mk(b))}
+  else if(t==2){var nl=bits(5)+257,nd=bits(5)+1,nc=bits(4)+4,ord=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15],ln=[],i;for(i=0;i<19;i++)ln[i]=0;for(i=0;i<nc;i++)ln[ord[i]]=bits(3);var ch=mk(ln),L=[];
+   while(L.length<nl+nd){var s=dec(ch);if(s<16)L.push(s);else{var p=0,r;if(s==16){p=L[L.length-1];r=3+bits(2)}else if(s==17)r=3+bits(3);else r=11+bits(7);while(r--)L.push(p)}}
+   codes(mk(L.slice(0,nl)),mk(L.slice(nl)))}
+  else throw new Error('bad block')}while(!last);
+ return new Uint8Array(out)}
+ function zipGet(buf,want){var u=new DataView(buf),b=new Uint8Array(buf),i,n=b.length;
+  for(i=n-22;i>=0&&u.getUint32(i,true)!==0x06054b50;i--);
+  if(i<0)return Promise.reject();var cnt=u.getUint16(i+10,true),p=u.getUint32(i+16,true),ent=null;
+  for(var k=0;k<cnt;k++){var nl=u.getUint16(p+28,true),xl=u.getUint16(p+30,true),cl=u.getUint16(p+32,true),nm=new TextDecoder().decode(b.subarray(p+46,p+46+nl));
+   if(nm==want){ent={m:u.getUint16(p+10,true),cs:u.getUint32(p+20,true),lo:u.getUint32(p+42,true)};break}p+=46+nl+xl+cl}
+  if(!ent)return Promise.resolve(null);var lo=ent.lo,st=lo+30+u.getUint16(lo+26,true)+u.getUint16(lo+28,true),raw=b.subarray(st,st+ent.cs);
+  if(ent.m===0)return Promise.resolve(new TextDecoder().decode(raw));
+  var fb=function(){return new TextDecoder().decode(inflate(raw))};try{var ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(raw);w.close();return new Response(ds.readable).text().catch(fb)}catch(e){try{return Promise.resolve(fb())}catch(e2){return Promise.reject(e2)}}}
+ function docxParas(buf){return zipGet(buf,'word/document.xml').then(function(x){if(!x)throw 0;var X=new DOMParser().parseFromString(x,'application/xml'),out=[];
+   [].forEach.call(X.getElementsByTagNameNS('*','p'),function(P){var t='';[].forEach.call(P.getElementsByTagNameNS('*','*'),function(e){var l=e.localName;if(l=='t')t+=e.textContent;else if(l=='tab'||l=='br')t+=' '});t=t.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').trim();if(t)out.push(t)});return out})}
+ function loadDocx(buf,name){zipGet(buf,'docProps/custom.xml').then(function(cx){if(cx){var parts=[],re=/name="dsm(\d+)"[^>]*><vt:lpwstr>([^<]*)</g,m;while(m=re.exec(cx))parts[+m[1]]=m[2];var j=parts.join('');if(j){try{apply(JSON.parse(decodeURIComponent(escape(atob(j)))),'Loaded "'+name+'" with all entries.');return 1}catch(e){}}}return 0}).catch(function(){return 0}).then(function(ok){if(ok)return;return docxParas(buf).then(function(a){var r=parseText('',a);
+  if(!r.got.length){say('Could not find a discharge summary in that .docx.');return}
+  apply(r.d,'Read the text of "'+name+'": '+r.got.slice(0,8).join(', ')+(r.got.length>8?' and more':'')+'. Please check lab values, medicines and dates.')},function(){say('Could not open that .docx file.')})})}
+ function loadText(txt,name){
+  txt=String(txt).replace(/^﻿/,'');
+  var m=txt.match(/DSMDATA:([A-Za-z0-9+\/=]+):END/)||txt.match(/name="dsm-data"\s+content="([A-Za-z0-9+\/=]+)"/);
+  if(m&&m[1]){try{var j=decodeURIComponent(escape(atob(m[1])));var d=JSON.parse(j);apply(d,'Loaded "'+name+'" with all entries.');return}catch(e){}}
+  if(/^\s*\{/.test(txt)){try{var d2=JSON.parse(txt);apply(d2,'Loaded "'+name+'".');return}catch(e){}}
+  var r=parseText(txt);
+  if(!r.got.length){say('Could not find a discharge summary in that file. Use a file saved with Save Word.');return}
+  apply(r.d,'This file has no saved data, so I read the text: '+r.got.slice(0,8).join(', ')+(r.got.length>8?' and more':'')+'. Please check lab values, medicines and dates.')}
+ btn.onclick=function(){inp.value='';inp.click()};
+ inp.onchange=function(){var f=inp.files&&inp.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){var bf=rd.result,h=new Uint8Array(bf.slice(0,2));if(h[0]==0x50&&h[1]==0x4b){try{loadDocx(bf,f.name)}catch(e){say('Could not open that .docx file. It may be damaged.')}}else loadText(new TextDecoder().decode(bf),f.name)};rd.onerror=function(){say('Could not read that file.')};rd.readAsArrayBuffer(f)};
+})();
+</script>
+</body>
+</html>
+
+</body></html>

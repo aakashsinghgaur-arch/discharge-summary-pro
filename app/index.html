@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard · Discharge Summary Pro</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b4a85">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body class="dsp-page">
+<noscript><p style="margin:0;padding:16px;font:15px sans-serif;background:#fff3cd;color:#664d03">This tool needs JavaScript. Please enable it in your browser settings.</p></noscript>
+<header class="ab">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✚</span><span><b>Discharge Summary Pro</b><small>GMCH · Surgical Gastroenterology, LT &amp; HPB</small></span></a>
+  <span class="ab-sp"></span>
+  <button type="button" class="ab-acct" id="acct"></button>
+</header>
+<main class="wrap" id="main" aria-busy="true">
+  <div class="dash-head">
+    <div><h1 id="hello">Discharge summaries</h1><p id="sub">Loading…</p></div>
+    <button type="button" class="dsp-btn primary" id="new" hidden>＋ New discharge summary</button>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Summary lists" id="tabs">
+    <button class="tab" role="tab" data-s="my_drafts" aria-selected="true">My drafts <span class="n" data-c="my_drafts">·</span></button>
+    <button class="tab" role="tab" data-s="shared_with_me" aria-selected="false">Shared with me <span class="n" data-c="shared_with_me">·</span></button>
+    <button class="tab" role="tab" data-s="shared_by_me" aria-selected="false">Shared by me <span class="n" data-c="shared_by_me">·</span></button>
+    <button class="tab" role="tab" data-s="pending_review" aria-selected="false">Pending review <span class="n" data-c="pending_review">·</span></button>
+    <button class="tab" role="tab" data-s="completed" aria-selected="false">Completed <span class="n" data-c="completed">·</span></button>
+    <button class="tab" role="tab" data-s="all" aria-selected="false">All <span class="n" data-c="all">·</span></button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search"><label class="sr-only" for="q">Search summaries</label><input id="q" type="search" placeholder="Search patient name, MRD, IRN, hospital no. or diagnosis" autocomplete="off" spellcheck="false"></div>
+    <label class="sr-only" for="st">Status</label>
+    <select id="st"><option value="">All statuses</option><option value="draft">Draft</option><option value="in_review">In review</option><option value="approved">Approved</option><option value="finalized">Finalized</option></select>
+    <label class="sr-only" for="so">Sort</label>
+    <select id="so"><option value="updated_desc">Recently edited</option><option value="updated_asc">Oldest edited</option><option value="created_desc">Recently created</option><option value="patient_asc">Patient name A–Z</option><option value="status">Status</option></select>
+  </div>
+
+  <section class="dsp-card list" role="tabpanel" aria-labelledby="tabs" id="list">
+    <table class="doc-table" aria-describedby="sub">
+      <thead><tr><th>Patient</th><th>Identifiers</th><th>Diagnosis</th><th>Status</th><th>Team</th><th>Last edited</th><th><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="cards" id="cards"></div>
+    <div class="empty" id="empty" hidden></div>
+    <div class="pager" id="pager" hidden><span id="pinfo"></span><span><button type="button" class="dsp-btn sm ghost" id="prev">← Previous</button> <button type="button" class="dsp-btn sm ghost" id="nextp">Next →</button></span></div>
+  </section>
+</main>
+<footer class="dsp-foot">Designed by <b>Dr Akash Singh</b> · Patient information is confidential. Access is limited to authorised clinicians and is logged.</footer>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
